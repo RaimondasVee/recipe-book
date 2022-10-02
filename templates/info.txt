@@ -1,0 +1,49 @@
+$foo['bar'] (array and element);
+$foo->bar (object and public property);
+$foo->bar() (object and public method);
+$foo->getBar() (object and getter method);
+$foo->isBar() (object and isser method);
+$foo->hasBar() (object and hasser method);
+
+<p>Username: {{ app.user.username ?? 'Anonymous user' }}</p>
+{% if app.debug %}
+    <p>Request method: {{ app.request.method }}</p>
+    <p>Application Environment: {{ app.environment }}</p>
+{% endif %}
+
+
+app.user
+The current user object or null if the user is not authenticated.
+app.request
+The Request object that stores the current request data (depending on your application, this can be a sub-request or a regular request).
+app.session
+The Session object that represents the current user's session or null if there is none.
+app.flashes
+An array of all the flash messages stored in the session. You can also get only the messages of some type (e.g. app.flashes('notice')).
+app.environment
+The name of the current configuration environment (dev, prod, etc).
+app.debug
+True if in debug mode. False otherwise.
+app.token
+A TokenInterface object representing the security token.
+
+
+<a href="{{ path('blog_index') }}">Homepage</a>
+
+{# ... #}
+
+{% for post in blog_posts %}
+    <h1>
+        <a href="{{ path('blog_post', {slug: post.slug}) }}">{{ post.title }}</a>
+    </h1>
+
+    <p>{{ post.excerpt }}</p>
+{% endfor %}
+
+
+{% for key, value in recipe %}   
+<tr>
+    <th>{{ key }} </th>
+    <td>{{ value }}</td>
+</tr>
+{% endfor %}

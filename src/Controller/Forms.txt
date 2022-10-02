@@ -1,0 +1,8 @@
+https://symfony.com/doc/current/form/embedded.html
+
+Often, you'll want to build a form that will include 
+fields from many different objects. For example, a registration 
+form may contain data belonging to a User object as well 
+as many Address objects. Fortunately this can be achieved 
+by the Form component.
+
