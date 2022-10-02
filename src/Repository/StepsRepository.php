@@ -63,4 +63,16 @@ class StepsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+   public function findByRecipeId($value): array
+   {
+       return $this->createQueryBuilder('s')
+           ->andWhere('s.recipeId = :val')
+           ->setParameter('val', $value)
+           ->orderBy('s.step', 'ASC')
+        //    ->setMaxResults(10)
+           ->getQuery()
+           ->getResult()
+       ;
+   }
 }

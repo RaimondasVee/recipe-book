@@ -23,6 +23,9 @@ class Ingredient
     #[ORM\Column]
     private ?float $qty = null;
 
+    #[ORM\Column]
+    private ?int $recipeId = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +63,18 @@ class Ingredient
     public function setQty(float $qty): self
     {
         $this->qty = $qty;
+
+        return $this;
+    }
+
+    public function getRecipeId(): ?int
+    {
+        return $this->recipeId;
+    }
+
+    public function setRecipeId(int $recipeId): self
+    {
+        $this->recipeId = $recipeId;
 
         return $this;
     }

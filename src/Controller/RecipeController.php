@@ -9,6 +9,8 @@ use App\Entity\Steps;
 use App\Entity\Recommendations;
 use App\Form\RecipeType;
 use App\Form\IngredientType;
+use App\Form\StepsType;
+use App\Form\RecommendationsType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,61 +53,62 @@ class RecipeController extends AbstractController
         $recipeData['author'] = 'dev';
 
         // Build Ingredients
-        if ($recipeData['ingredients'] != "") {
-            $recipeIngredients = explode(',', $recipeData['ingredients']);
-    
-            foreach ($recipeIngredients as $key => $value) {
-                // Fetch Ingredient Unit by Ingredient ID
-                $units = $unit->find($ingredient->find($value)->getId());
+        $recipeIngredients = $ingredient->findByRecipeId($id);
 
-                $ingredientData[$ingredient->find($value)->getName()] = [
-                    'id' =>  $ingredient->find($value)->getId(),
-                    'qty' =>  $ingredient->find($value)->getQty(),
-                    'unitName' => $units->getUnitName(),
-                    'unitAbb'  => $units->getUnitAbbreviation()
+        if (!empty($recipeIngredients)){
+            foreach ($recipeIngredients as $key => $value) {
+                $ingredientUnit = $unit->find($value->getUnit());
+
+                $ingredientData[ucwords($value->getName())] = [
+                    'id'       => $value->getId(),
+                    'qty'      => $value->getQty(),
+                    'unitName' => $ingredientUnit->getUnitName(),
+                    'unitAbb'  => $ingredientUnit->getUnitAbbreviation(),
                 ];
             }
         }
 
         // Build Steps
-        if ($recipeData['steps'] != "") {
-            $recipeSteps = explode(',', $recipeData['steps']);
-    
-            foreach ($recipeSteps as $key => $value) {
-                $stepsData[$key] = [
-                    'id'   => $steps->find($value)->getId(),
-                    'text' => $steps->find($value)->getText(),
-                ];
-                
-                // 
-                if ($steps->find($value)->getRecommendations() != "") {
-                    $stepsRec = explode(',', $steps->find($value)->getRecommendations());
+        $recipeSteps = $steps->findByRecipeId($id);
 
-                    foreach ($stepsRec as $stepKey => $stepValue) {
-                        $stepsData[$key]['recommendations'][$stepKey] = $recommendations->find($stepValue)->getRecText();
+        if (!empty($recipeSteps)){
+            foreach ($recipeSteps as $key => $value) {
+                $stepNumber = $value->getStep();
+
+                $stepsData[$value->getStep()] = [
+                    'id'   => $value->getId(),
+                    'text' => $value->getText(),
+                ];
+
+                // Build Step Recommendations
+                $recipeRecommendations = $recommendations->findByTypeAndId('step', $value->getId());
+
+                if(!empty($recipeRecommendations)) {
+                    foreach ($recipeRecommendations as $rkey => $rvalue) {
+                        $stepsData[$value->getStep()]['recommendations'][$rkey] = $rvalue->getRecText();
                     }
                 }
             }
         }
 
-        // Build Recommendations
-        if ($recipeData['recommendations'] != "") {
-            $recipeRecommendations = explode(',', $recipeData['recommendations']);
-    
+        // Build Recipe Recommendations
+        $recipeRecommendations = $recommendations->findByTypeAndId('recipe', $id);
+
+        if(!empty($recipeRecommendations)) {
             foreach ($recipeRecommendations as $key => $value) {
-                $recommendationsData[$key] = $recommendations->find($value)->getRecText();
+                $recommendationsData[] = $value->getRecText();
             }
         }
 
-        // Form Building...
+        // Create all required recipe forms
         $entityManager = $doctrine->getManager();
 
         // Ingredient Form
         $ingredient = new Ingredient();
         
-        $ingredient->setName('');
+        // $ingredient->setName('');
         // $ingredient->setQty(0);
-        // $ingredient->setUnit(0);
+        $ingredient->setRecipeId($id);
         
         $form['ingredient'] = $this->createForm(IngredientType::class, $ingredient);
         
@@ -117,7 +120,7 @@ class RecipeController extends AbstractController
                 return new Response((string) $errors, 400);
             }
 
-            $recipe = $form['ingredient']->getData();
+            $ingredient = $form['ingredient']->getData();
 
             $entityManager->persist($ingredient);
             $entityManager->flush();
@@ -125,34 +128,60 @@ class RecipeController extends AbstractController
             return $this->redirectToRoute('app_recipe', ['id' => $id]);
         }
 
+        // Steps Form
+        $steps = new Steps();
+        $steps->setRecipeId($id);
+        $steps->setStep($stepNumber+1);
 
+        $form['steps'] = $this->createForm(StepsType::class, $steps);
 
+        $form['steps']->handleRequest($request);
+        if ($form['steps']->isSubmitted() && $form['steps']->isValid()) {
 
+            $errors = $validator->validate($steps);
+            if (count($errors) > 0) {
+                return new Response((string) $errors, 400);
+            }
 
+            $steps = $form['steps']->getData();
 
+            $entityManager->persist($steps);
+            $entityManager->flush();
 
+            return $this->redirectToRoute('app_recipe', ['id' => $id]);
+        }
 
+        // Recipe Recommendation Form
+        $recommendations = new Recommendations();
+        $recommendations->setType('recipe');
+        $recommendations->setTypeId($id);
 
+        $form['recommendations'] = $this->createForm(RecommendationsType::class, $recommendations);
 
+        $form['recommendations']->handleRequest($request);
+        if ($form['recommendations']->isSubmitted() && $form['recommendations']->isValid()) {
 
+            $errors = $validator->validate($recommendations);
+            if (count($errors) > 0) {
+                return new Response((string) $errors, 400);
+            }
 
+            $steps = $form['recommendations']->getData();
 
+            $entityManager->persist($recommendations);
+            $entityManager->flush();
 
-
-
-
-
-
+            return $this->redirectToRoute('app_recipe', ['id' => $id]);
+        }
         
-
-
-
         return $this->renderForm('recipe/show.html.twig', [
-            'recipe'            => $recipeData,
-            'ingredients'       => $ingredientData,
-            'steps'             => $stepsData,
-            'recommendations'   => $recommendationsData,
-            'formIngredient'    => $form['ingredient'],
+            'recipe'              => $recipeData,
+            'ingredients'         => $ingredientData,
+            'steps'               => $stepsData,
+            'recommendations'     => $recommendationsData,
+            'formIngredient'      => $form['ingredient'],
+            'formSteps'           => $form['steps'],
+            'formRecommendations' => $form['recommendations'],
         ]);
     }
     

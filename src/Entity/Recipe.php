@@ -32,14 +32,14 @@ class Recipe
     #[ORM\Column]
     private ?int $author = null;
 
-    #[ORM\Column(length: 2550, nullable: true)]
-    private ?string $ingredients = null;
+    // #[ORM\Column(length: 2550, nullable: true)]
+    // private ?string $ingredients = null;
 
-    #[ORM\Column(length: 2550, nullable: true)]
-    private ?string $steps = null;
+    // #[ORM\Column(length: 2550, nullable: true)]
+    // private ?string $steps = null;
 
-    #[ORM\Column(length: 2550, nullable: true)]
-    private ?string $recommendations = null;
+    // #[ORM\Column(length: 2550, nullable: true)]
+    // private ?string $recommendations = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created = null;
@@ -50,15 +50,16 @@ class Recipe
     public function getAll(): array
     {
         $array = [
+            'id'                => $this->getId(),
             'status'            => $this->getStatus(),
             'visibility'        => $this->getVisibility(),
             'name'              => ucfirst($this->getName()),
             'description'       => $this->getDescription(),
             'disclaimer'        => $this->getDisclaimer(),
             'author'            => $this->getAuthor(),
-            'ingredients'       => $this->getIngredients(),
-            'steps'             => $this->getSteps(),
-            'recommendations'   => $this->getRecommendations(),
+            // 'ingredients'       => $this->getIngredients(),
+            // 'steps'             => $this->getSteps(),
+            // 'recommendations'   => $this->getRecommendations(),
             'created'           => $this->getCreated()->format('Y-m-d H:i:s'),
             'updated'           => $this->getUpdated()->format('Y-m-d H:i:s')
         ];
@@ -143,41 +144,41 @@ class Recipe
         return $this;
     }
 
-    public function getIngredients(): ?string
-    {
-        return $this->ingredients;
-    }
+    // public function getIngredients(): ?string
+    // {
+    //     return $this->ingredients;
+    // }
 
-    public function setIngredients(?string $ingredients): self
-    {
-        $this->ingredients = $ingredients;
+    // public function setIngredients(?string $ingredients): self
+    // {
+    //     $this->ingredients = $ingredients;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getSteps(): ?string
-    {
-        return $this->steps;
-    }
+    // public function getSteps(): ?string
+    // {
+    //     return $this->steps;
+    // }
 
-    public function setSteps(?string $steps): self
-    {
-        $this->steps = $steps;
+    // public function setSteps(?string $steps): self
+    // {
+    //     $this->steps = $steps;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getRecommendations(): ?string
-    {
-        return $this->recommendations;
-    }
+    // public function getRecommendations(): ?string
+    // {
+    //     return $this->recommendations;
+    // }
 
-    public function setRecommendations(?string $recommendations): self
-    {
-        $this->recommendations = $recommendations;
+    // public function setRecommendations(?string $recommendations): self
+    // {
+    //     $this->recommendations = $recommendations;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getCreated(): ?\DateTimeInterface
     {

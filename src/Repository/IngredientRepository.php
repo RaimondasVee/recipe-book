@@ -78,4 +78,16 @@ class IngredientRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function findByRecipeId($value): array
+   {
+       return $this->createQueryBuilder('i')
+           ->andWhere('i.recipeId = :val')
+           ->setParameter('val', $value)
+           ->orderBy('i.name', 'ASC')
+        //    ->setMaxResults(10)
+           ->getQuery()
+           ->getResult()
+       ;
+   }
 }

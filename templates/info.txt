@@ -47,3 +47,6 @@ A TokenInterface object representing the security token.
     <td>{{ value }}</td>
 </tr>
 {% endfor %}
+
+
+{# {{ render('/recipe/show/' ~ recipe.id ~ '/steps/new') }} #}

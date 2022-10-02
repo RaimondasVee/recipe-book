@@ -63,4 +63,31 @@ class RecommendationsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+   public function findByTypeAndId($type, $value): array
+   {
+       return $this->createQueryBuilder('r')
+           ->andWhere('r.type = :type')
+           ->andWhere('r.typeId = :val')
+           ->setParameter('type', $type)
+           ->setParameter('val', $value)
+           ->orderBy('r.id', 'ASC')
+        //    ->setMaxResults(10)
+           ->getQuery()
+           ->getResult()
+       ;
+   }
+
+//    public function findByStepId($value): array
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.type = step')
+//            ->andWhere('r.type_id = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('r.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
 }

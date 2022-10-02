@@ -17,6 +17,12 @@ class Recommendations
     #[ORM\Column(type: Types::TEXT)]
     private ?string $rec_text = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
+    #[ORM\Column]
+    private ?int $typeId = null;
+
     // #[ORM\Column(nullable: true)]
     // private array $extras = [];
 
@@ -48,4 +54,28 @@ class Recommendations
 
     //     return $this;
     // }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getTypeId(): ?int
+    {
+        return $this->typeId;
+    }
+
+    public function setTypeId(int $typeId): self
+    {
+        $this->typeId = $typeId;
+
+        return $this;
+    }
 }

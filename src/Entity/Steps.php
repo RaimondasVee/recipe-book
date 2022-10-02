@@ -20,8 +20,14 @@ class Steps
     // #[ORM\Column(nullable: true)]
     // private array $extras = [];
 
-    #[ORM\Column(length: 2550, nullable: true)]
-    private ?string $recommendations = null;
+    // #[ORM\Column(length: 2550, nullable: true)]
+    // private ?string $recommendations = null;
+
+    #[ORM\Column]
+    private ?int $recipeId = null;
+
+    #[ORM\Column]
+    private ?int $step = null;
 
     public function getId(): ?int
     {
@@ -52,14 +58,38 @@ class Steps
     //     return $this;
     // }
 
-    public function getRecommendations(): ?string
+    // public function getRecommendations(): ?string
+    // {
+    //     return $this->recommendations;
+    // }
+
+    // public function setRecommendations(?string $recommendations): self
+    // {
+    //     $this->recommendations = $recommendations;
+
+    //     return $this;
+    // }
+
+    public function getRecipeId(): ?int
     {
-        return $this->recommendations;
+        return $this->recipeId;
     }
 
-    public function setRecommendations(?string $recommendations): self
+    public function setRecipeId(int $recipeId): self
     {
-        $this->recommendations = $recommendations;
+        $this->recipeId = $recipeId;
+
+        return $this;
+    }
+
+    public function getStep(): ?int
+    {
+        return $this->step;
+    }
+
+    public function setStep(int $step): self
+    {
+        $this->step = $step;
 
         return $this;
     }

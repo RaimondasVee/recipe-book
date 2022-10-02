@@ -2,25 +2,23 @@
 
 namespace App\Form;
 
-use App\Entity\Ingredient;
+use App\Entity\Steps;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class IngredientType extends AbstractType
+class StepsType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class)
-            ->add('unit', TextType::class)
-            ->add('qty', NumberType::class)
+            ->add('text', TextType::class)
             ->add('recipeId', HiddenType::class)
+            ->add('step', HiddenType::class)
             ->add('save', SubmitType::class)
         ;
     }
@@ -28,7 +26,7 @@ class IngredientType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Ingredient::class,
+            'data_class' => Steps::class,
         ]);
     }
 }
