@@ -57,8 +57,6 @@ class IngredientController extends AbstractController
             $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
         }
 
-        var_dump($owner);
-        return false;
         $ingredient = $doctrine->getRepository(Ingredient::class)->find($ingredientId);
 
         $entityManager = $doctrine->getManager();

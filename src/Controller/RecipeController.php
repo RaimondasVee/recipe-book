@@ -123,7 +123,11 @@ class RecipeController extends AbstractController
 
                 if(!empty($recipeRecommendations)) {
                     foreach ($recipeRecommendations as $rkey => $rvalue) {
-                        $stepsData[$value->getStep()]['recommendations'][$rkey] = $rvalue->getRecText();
+                        $stepsData[$value->getStep()]['recommendations'][$rkey] = [
+                            'num'  => $rkey,
+                            'id'   => $rvalue->getId(),
+                            'text' => $rvalue->getRecText()
+                        ];
                     }
                 }
             }

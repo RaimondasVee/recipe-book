@@ -68,6 +68,24 @@ class StepsController extends AbstractController
         return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
     }
 
+    #[Route('/recipe/show/{recipeId}/steps/update/{stepId}/rec/{recId}', name: 'app_step_recommendation_update')]
+    public function updateRecommendation(Request $request, ManagerRegistry $doctrine, int $recipeId, int $stepId, int $recId) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $text = $request->request->get('text');
+        $recommendation = $doctrine->getRepository(Recommendations::class)->find($recId);
+        $recommendation->setRecText($text);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
     #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}', name: 'app_step_delete')]
     public function delete(ManagerRegistry $doctrine, int $recipeId, int $stepId) {
         $owner = $this->checkRecipeOwner($recipeId, $doctrine);

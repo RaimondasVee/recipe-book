@@ -1,6 +1,7 @@
 // Ingredient Modal
 const ingredientModal = document.getElementById('ingredientDeleteModal')
 ingredientModal.addEventListener('show.bs.modal', event => {
+  console.log('ingredient modal')
   const button = event.relatedTarget
 
   const name = button.getAttribute('data-bs-name')
@@ -19,6 +20,9 @@ ingredientModal.addEventListener('show.bs.modal', event => {
 const stepModal = document.getElementById('stepManagerModal')
 stepModal.addEventListener('show.bs.modal', event => {
   // Button that triggered the modal
+  if (event.relatedTarget.id == 'returnButton') {
+    return
+  }
   const button = event.relatedTarget
 
   const id = button.getAttribute('data-bs-id')
@@ -33,6 +37,17 @@ stepModal.addEventListener('show.bs.modal', event => {
   const buttonDelete = stepModal.querySelector('#deleteStepConfirm')
   const buttonUp = stepModal.querySelector('#moveUp')
   const buttonDown = stepModal.querySelector('#moveDown')
+  const recButton = stepModal.querySelector('#recDataButton')
+
+  //Build recommendations
+  recButton.setAttribute('data-rec-id', recipeId)
+  recButton.setAttribute('data-step-id', id)
+  recButton.setAttribute('data-rec-0-id', button.getAttribute('data-bs-rec-0-id'))
+  recButton.setAttribute('data-rec-0-text', button.getAttribute('data-bs-rec-0-text'))
+  recButton.setAttribute('data-rec-1-id', button.getAttribute('data-bs-rec-1-id'))
+  recButton.setAttribute('data-rec-1-text', button.getAttribute('data-bs-rec-1-text'))
+  recButton.setAttribute('data-rec-2-id', button.getAttribute('data-bs-rec-2-id'))
+  recButton.setAttribute('data-rec-2-text', button.getAttribute('data-bs-rec-2-text'))
 
   modalTitle.textContent = `Editing Step: ${step}`
   textarea.textContent = text
@@ -52,4 +67,22 @@ stepModal.addEventListener('show.bs.modal', event => {
   } else {
     buttonDown.classList.remove("disabled")
   }
+})
+
+// Step Modal
+const recModal = document.getElementById('recManagerModal')
+recModal.addEventListener('show.bs.modal', event => {
+  // Button that triggered the modal
+  const button = event.relatedTarget
+
+  const recipeId = button.getAttribute('data-rec-id')
+  const stepId = button.getAttribute('data-step-id')
+  const recId = button.getAttribute('data-rec-0-id')
+
+  const textarea = recModal.querySelector('#stepRecEditText')
+  const form = recModal.querySelector('#stepRecEdit')
+
+  form.setAttribute('action', `/recipe/show/${recipeId}/steps/update/${stepId}/rec/${recId}`)
+  textarea.textContent = button.getAttribute('data-rec-0-text')
+
 })

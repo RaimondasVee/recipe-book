@@ -19,61 +19,42 @@
 
 
 {# STEP MODAL #}
-<div class="modal fade" id="stepManagerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="stepManagerModal" tabindex="-1" aria-labelledby="stepManagerModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Editing Step: </h1>
-                <button id="moveUp" type="button" class="btn btn-sm btn-warning ms-4"><strong>⤤</strong></button>
-                <button id="moveDown" type="button" class="btn btn-sm btn-warning ms-3 "><strong>⤦</strong></button>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Editing Step: </h1>
+                    <button id="moveUp" type="button" class="btn btn-sm btn-warning ms-4"><strong>⤤</strong></button>
+                    <button id="moveDown" type="button" class="btn btn-sm btn-warning ms-3 "><strong>⤦</strong></button>
 
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form action="" method="post" id="stepEdit">
-                <textarea form="stepEdit" name="text" class="text form-control col-12" rows="4">
-                </textarea>
-            </form>
-
-            {# 
-            step text area
-            step reorganizer
-            step deletion
-            rec show
-            rec add
-            rec remove #}
-
-
-            {# <form>
-            <div class="mb-3">
-                <label for="recipient-name" class="col-form-label">Recipient:</label>
-                <input type="text" class="form-control" id="recipient-name">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="mb-3">
-                <label for="message-text" class="col-form-label">Message:</label>
-                <textarea class="form-control" id="message-text"></textarea>
+            <div class="modal-body">
+                <form action="" method="post" id="stepEdit">
+                    <textarea form="stepEdit" name="text" class="text form-control col-12" rows="4">
+                    </textarea>
+                </form>
             </div>
-            </form> #}
-        </div>
-        <div class="modal-footer">
-            <div class="d-flex flex-row-reverse justify-content-between col-12 align-items-center">
-                {# Save Button #}
-                <div>
-                    <button class="btn btn-secondary" data-bs-target="#recommendationModal" data-bs-toggle="modal">Recommendations</button>
-                    <button class="btn btn-warning" type="submit" form="stepEdit" value="Submit">Save</button>
-                </div>
+            <div class="modal-footer">
+                <div class="d-flex flex-row-reverse justify-content-between col-12 align-items-center">
+                    {# Save Button #}
+                    <div>
+                        <button class="btn btn-secondary" data-bs-target="#recManagerModal" id="recDataButton" data-bs-toggle="modal">Recommendations</button>
+                        <button class="btn btn-warning" type="submit" form="stepEdit" value="Submit">Save</button>
+                    </div>
 
-                {# Delete Step Accordion #}
-                <div class="accordion ms-2" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Delete step
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                    <a id="deleteStepConfirm" href="" ><button type="button" class="btn btn-danger">Confirm</button></a>
+                    {# Delete Step Accordion #}
+                    <div class="accordion ms-2" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Delete step
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                        <a id="deleteStepConfirm" href="" ><button type="button" class="btn btn-danger">Confirm</button></a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -81,6 +62,28 @@
             </div>
         </div>
     </div>
+</div>
+
+{# RECOMMENDATION MODAL #}
+<div class="modal fade" id="recManagerModal" aria-hidden="true" aria-labelledby="exampleModalTosggleLabel2" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Add or Edit Recommendation for this Step</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post" id="stepRecEdit">
+            <textarea form="stepRecEdit" id="stepRecEditText" name="text" class="text form-control col-12" rows="4">
+            </textarea>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="returnButton" data-bs-target="#stepManagerModal" data-bs-toggle="modal">Return</button>
+        <button class="btn btn-warning" id="stepRecSubmitButton" type="submit" form="stepRecEdit" value="stepRecEdit">Save Changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {# Import Modal Scripts #}

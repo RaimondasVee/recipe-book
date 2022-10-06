@@ -143,14 +143,21 @@
         data-bs-step={{ step.step + 1 }}
         data-bs-text="{{ step.text }}"
         data-bs-recipe={{ recipe.id }}
-        data-bs-length={{ steps|length }} {% endif %}>
+        data-bs-length={{ steps|length }} {% endif %}
+          {% if step.recommendations is defined %}
+            {% for rec in step.recommendations %}
+              data-bs-rec-{{ rec.num }}-id="{{ rec.id }}"
+              data-bs-rec-{{ rec.num }}-text="{{ rec.text }}"
+            {% endfor %}
+          {% endif %}
+        >
       <th colspan="1">Step {{ step.step + 1 }}</th>
       <td colspan="1">
         {{ step.text }}
         {% if step.recommendations is defined %}
           {% for rec in step.recommendations %}
           <div class="p-2 mt-1 recipe-step-recommendation">
-          {{ rec }}
+          {{ rec.text }}
           </div>
           {% endfor %}
         {% endif %}
@@ -181,8 +188,6 @@
 </div>
 {% endif %}
 
-{# Include Modals #}
-{% include 'recipe/components/modal.html.twig' %}
 
 {# {{ dump(recipe) }} #}
 {# {{ dump(ingredients) }} #}
@@ -190,5 +195,7 @@
 {# {{ dump(recommendations) }} #}
 {# {{ dump(form) }} #}
 
+{# Include Modals #}
+{% include 'recipe/components/modal.html.twig' %}
 {% endblock %}
 
