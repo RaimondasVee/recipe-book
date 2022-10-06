@@ -1,0 +1,8 @@
+:root {
+    --accordion-color: rgb(9, 9, 9);
+    --acordion-bg: black;
+}
+
+.accordion{
+    --accordion-bg: black;
+}

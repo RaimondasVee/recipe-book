@@ -39,6 +39,33 @@ class RecipeRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAccessibleRecipes(): array
+    {
+        $value = 'public';
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.visibility = :val')
+            ->setParameter('val', $value)
+            ->orderBy('r.name', 'ASC')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findPersonalRecipes($value): array
+    {
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.author = :val')
+            ->setParameter('val', $value)
+            ->orderBy('r.name', 'ASC')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Recipe[] Returns an array of Recipe objects
 //     */

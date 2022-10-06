@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StepsType extends AbstractType
@@ -16,10 +17,17 @@ class StepsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('text', TextType::class)
+            ->add('text', TextareaType::class, [
+                'label' => false,
+                'label_attr' => ['class' => 'form-label'],
+                'attr' => ['class' => 'form-control', 'rows' => '3']
+                ])
             ->add('recipeId', HiddenType::class)
             ->add('step', HiddenType::class)
-            ->add('save', SubmitType::class)
+            ->add('save', SubmitType::class, [
+                'label' => 'Add step',
+                'attr' => ['class' => 'btn-warning btn']
+                ])
         ;
     }
 

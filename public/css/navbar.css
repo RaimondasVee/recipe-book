@@ -3,3 +3,13 @@
     border: 3px solid #f7d5a3;
     border-radius: 14px;
 }
+
+.navbar-expand-xl .navbar-nav .dropdown-menu {
+    min-width: 300px;
+}
+
+ul.dropdown-menu li:nth-of-type(2) {
+    border: 0px solid #f7d5a3;
+    border-radius: 5px;
+    background-color: #f7d5a3;
+}

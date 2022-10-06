@@ -2,6 +2,10 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        {# <meta name="viewport" content="width=1024"> #}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
@@ -13,49 +17,76 @@
 
         {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-
+        {# <script src="{{ asset('js/modal.js') }}"></script> #}
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-xl bg-custom">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Recipe Book</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link disabled">Disabled</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-                </div>
-            </div>
-        </nav>
-
         <div class="container-sm">
-        {% block body %}{% endblock %}
+            <nav class="navbar navbar-expand-xl">
+                <div class="container-fluid">
+                    <a class="navbar-brand text-light">Recipe Book</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                        <a class="nav-link active text-light" aria-current="page" href={{ path('app_home') }}>Home</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link active text-light" aria-current="page" href={{ path('app_recipes') }}>Recipes</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link active text-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if app.user %}
+                                    <strong>Logged in: {{ app.user.username }}</strong>
+                                {% else %}
+                                    <strong>Not Logged In</strong>
+                                {% endif %}
+                            </a>
+                            <ul class="container-sm dropdown-menu mb-4">
+                                {% if app.user %}
+                                    <li><a class="dropdown-item disabled btn" href={{ path('app_logout') }}>Manage Account</a></li>
+                                    <li><a class="dropdown-item btn btn-warning" href={{ path('app_recipes', {'personal': true}) }}>My Recipes</a></li>
+                                    
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item btn btn-danger text-light" href={{ path('app_logout') }}>Logout</a></li>
+                                    {# <a class="btn btn-warning m-4" href={{ path('app_logout') }} role="button">My Recipes</a>
+                                    <a class="btn btn-danger m-4" href={{ path('app_logout') }} role="button">Logout</a> #}
+                                {% else %}
+                                    {{ render('/login') }}
+                                {% endif %}
+
+                                {# <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li> #}
+                            </ul>
+                        </li>
+                        {# <li class="nav-item">
+                        <a class="nav-link disabled">Disabled</a>
+                        </li> #}
+                    </ul>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-warning" type="submit">Search</button>
+                    </form>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="row gy--2">
+        </div>
+
+        <div class="container-main container-sm p-4 overflow-hidden">
+
+            {# {% set formErrors = MyFormVariable.vars.errors.form.getErrors(true) %} #}
+            {# {{ dump(LoginController) }} #}
+            {% if formErrors is defined %}
+                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+            {% block body %}{% endblock %}
         </div>
     </body>
 </html>

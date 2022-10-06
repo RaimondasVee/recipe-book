@@ -32,15 +32,6 @@ class Recipe
     #[ORM\Column]
     private ?int $author = null;
 
-    // #[ORM\Column(length: 2550, nullable: true)]
-    // private ?string $ingredients = null;
-
-    // #[ORM\Column(length: 2550, nullable: true)]
-    // private ?string $steps = null;
-
-    // #[ORM\Column(length: 2550, nullable: true)]
-    // private ?string $recommendations = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created = null;
 
@@ -57,9 +48,6 @@ class Recipe
             'description'       => $this->getDescription(),
             'disclaimer'        => $this->getDisclaimer(),
             'author'            => $this->getAuthor(),
-            // 'ingredients'       => $this->getIngredients(),
-            // 'steps'             => $this->getSteps(),
-            // 'recommendations'   => $this->getRecommendations(),
             'created'           => $this->getCreated()->format('Y-m-d H:i:s'),
             'updated'           => $this->getUpdated()->format('Y-m-d H:i:s')
         ];
@@ -143,42 +131,6 @@ class Recipe
 
         return $this;
     }
-
-    // public function getIngredients(): ?string
-    // {
-    //     return $this->ingredients;
-    // }
-
-    // public function setIngredients(?string $ingredients): self
-    // {
-    //     $this->ingredients = $ingredients;
-
-    //     return $this;
-    // }
-
-    // public function getSteps(): ?string
-    // {
-    //     return $this->steps;
-    // }
-
-    // public function setSteps(?string $steps): self
-    // {
-    //     $this->steps = $steps;
-
-    //     return $this;
-    // }
-
-    // public function getRecommendations(): ?string
-    // {
-    //     return $this->recommendations;
-    // }
-
-    // public function setRecommendations(?string $recommendations): self
-    // {
-    //     $this->recommendations = $recommendations;
-
-    //     return $this;
-    // }
 
     public function getCreated(): ?\DateTimeInterface
     {

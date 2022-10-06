@@ -7,6 +7,7 @@ use App\Entity\Ingredient;
 use App\Entity\IngredientUnit;
 use App\Entity\Steps;
 use App\Entity\Recommendations;
+use App\Entity\User;
 use App\Form\RecipeType;
 use App\Form\IngredientType;
 use App\Form\StepsType;
@@ -20,23 +21,46 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RecipeController extends AbstractController
 {
-    #[Route('/recipe', name: 'app_recipes')]
-    public function index(): Response
+    #[Route('/recipe/index', name: 'app_recipes')]
+    public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        $personal = $request->get('personal');
+        if ($personal == true) {
+            $user = $this->getUser();
+
+            if ($user === null) {
+                $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            }
+            $recipe = $doctrine->getRepository(Recipe::class)->findPersonalRecipes($this->getUser()->getId());
+        } else {
+            $recipe = $doctrine->getRepository(Recipe::class)->findAccessibleRecipes();
+        }
+        $user   = $doctrine->getRepository(User::class);
+
+        $recipes = [];
+        foreach ($recipe as $key => $value) {
+            $recipes[$key] = $value->getAll();
+            $recipes[$key]['author'] = $user->findUser($recipes[$key]['author'])->getUsername();
+        }
+
         return $this->render('recipe/index.html.twig', [
-            'controller_name' => 'RecipeController',
+            'recipes'  => $recipes,
+            'personal' => $personal,
         ]);
     }
 
     #[Route('/recipe/show/{id}', name: 'app_recipe')]
     public function show(Request $request, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id): Response
     {
+        $user = $this->getUser();
+
         // Database Objects
         $recipe             = $doctrine->getRepository(Recipe::class)->find($id);
         $ingredient         = $doctrine->getRepository(Ingredient::class);
         $steps              = $doctrine->getRepository(Steps::class);
         $recommendations    = $doctrine->getRepository(Recommendations::class);
         $unit               = $doctrine->getRepository(IngredientUnit::class);
+        $author             = $doctrine->getRepository(User::class);
 
         if (!$recipe) {
             throw $this->createNotFoundException(
@@ -48,9 +72,20 @@ class RecipeController extends AbstractController
         $ingredientData = [];
         $stepsData = [];
         $recommendationsData = [];
+        
+        $owner = $this->checkRecipeOwner($id, $doctrine);
+
+        if ($recipeData['visibility'] == 'private') {
+            if ($user === null) {
+                $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            }
+            if (!$owner) {      
+                $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'The Author of the recipe has set the visibility to private');
+            }
+        }
 
         // Do Author
-        $recipeData['author'] = 'dev';
+        $recipeData['author'] = $author->findUser($recipeData['author'])->getUsername();
 
         // Build Ingredients
         $recipeIngredients = $ingredient->findByRecipeId($id);
@@ -61,6 +96,7 @@ class RecipeController extends AbstractController
 
                 $ingredientData[ucwords($value->getName())] = [
                     'id'       => $value->getId(),
+                    'name'     => ucwords($value->getName()),
                     'qty'      => $value->getQty(),
                     'unitName' => $ingredientUnit->getUnitName(),
                     'unitAbb'  => $ingredientUnit->getUnitAbbreviation(),
@@ -70,6 +106,7 @@ class RecipeController extends AbstractController
 
         // Build Steps
         $recipeSteps = $steps->findByRecipeId($id);
+        $stepNumber  = 0;
 
         if (!empty($recipeSteps)){
             foreach ($recipeSteps as $key => $value) {
@@ -77,6 +114,7 @@ class RecipeController extends AbstractController
 
                 $stepsData[$value->getStep()] = [
                     'id'   => $value->getId(),
+                    'step' => $value->getStep(),
                     'text' => $value->getText(),
                 ];
 
@@ -175,6 +213,7 @@ class RecipeController extends AbstractController
         }
         
         return $this->renderForm('recipe/show.html.twig', [
+            'owner'               => $owner,
             'recipe'              => $recipeData,
             'ingredients'         => $ingredientData,
             'steps'               => $stepsData,
@@ -188,15 +227,16 @@ class RecipeController extends AbstractController
     #[Route('/recipe/new', name: 'app_recipe_new')]
     public function new(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        
+        $user = $this->getUser();
         
         $recipe = new Recipe();
         $entityManager = $doctrine->getManager();
         
-        $recipe->setStatus('');
-        $recipe->setName('');
-        $recipe->setDescription('');
-        $recipe->setDisclaimer('');
-        $recipe->setAuthor(1);
+        $recipe->setStatus('draft');
+        $recipe->setVisibility('visible');
+        $recipe->setAuthor($user->getId());
         $recipe->setCreated(new \DateTime('now'));
         $recipe->setUpdated(new \DateTime('now'));
         
@@ -223,5 +263,76 @@ class RecipeController extends AbstractController
         return $this->renderForm('recipe/new.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    #[Route('/recipe/udpdate/{id}/{statusType}/{statusMessage}', name: 'app_recipe_update_status')]
+    public function updateStatus(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $statusType, string $statusMessage): Response
+    {
+        $owner = $this->checkRecipeOwner($id, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($id);
+        $entityManager  = $doctrine->getManager();
+
+        switch ($statusType) {
+            case 'visibility':
+                switch ($statusMessage) {
+                    case 'public':
+                        $recipe->setVisibility('public');
+                        break;
+                    case 'private':
+                        $recipe->setVisibility('private');
+                        break;
+                    default:
+                        $this->denyAccessUnlessGranted('DENY', 'Unknown Operation', 'The operation is not defined');
+                        break;
+                }
+                break;
+            case 'status':
+                switch ($statusMessage) {
+                    case 'published':
+                        $recipe->setStatus('published');
+                        break;
+                    case 'draft':
+                        $recipe->setStatus('draft');
+                        break;
+                    default:
+                        $this->denyAccessUnlessGranted('DENY', 'Unknown Operation', 'The operation is not defined');
+                        break;
+                }
+                break;
+            default:
+                $this->denyAccessUnlessGranted('DENY', 'Unknown Operation', 'The operation is not defined');
+                break;
+        }
+
+        $errors = $validator->validate($recipe);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, 400);
+        }
+
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_recipe', ['id' => $id]);
+    }
+
+    private function checkRecipeOwner($id, ManagerRegistry $doctrine): mixed
+    {
+        $user   = $this->getUser();
+        if ($user === null) {
+            return false;
+        }
+
+        $author = $doctrine->getRepository(Recipe::class)->find($id)->getAuthor();
+
+        if ($author == $user->getId()) {
+            return true;
+        }
+
+        return false;
     }
 }

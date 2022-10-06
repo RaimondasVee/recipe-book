@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="text-light">Not Authorized!</h1>
+    <p class="text-light">
+        The requested page could not be accessed. <a href="{{ path('app_home') }}">Return home</a>.
+    </p>
+
+    <pre class="text-light">{{ exception.traceAsString }}</pre>
+{% endblock %}

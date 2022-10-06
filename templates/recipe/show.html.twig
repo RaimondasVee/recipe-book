@@ -3,68 +3,188 @@
 {% block title %}Recipe Name{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<h1> {{ recipe.name }} </h1>
 
-<div class="example-wrapper">
-    <h1> {{ recipe.name }} </h1>
-
-
-  {{ dump(recipe) }}
-  {{ dump(ingredients) }}
-  {{ dump(steps) }}
-  {{ dump(recommendations) }}
-  {# {{ dump(form) }} #}
-
-
-  <div class="accordion" id="accordionExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        Ingredient Form
-      </button>
-    </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-    {{ form(formIngredient) }}
-      </div>
+{# Top form part - info and ingredients #}
+<div class="row mb-4 overflow-hidden align-items-center flex-row-reverse">
+  {# Info block #}
+  <div class="recipe-row col-lg-8">
+    <div class="d-flex mb-3">
+      <div class="text-end me-4" style="min-width: 120px">Recipe Name:</div>{{ recipe.name }}
     </div>
+    <div class="d-flex mb-3">
+      <div class="text-end me-4" style="min-width: 120px">Created By:</div>{{ recipe.author }}
+    </div>
+    <div class="d-flex mb-3">
+      <div class="text-end me-4" style="min-width: 120px">Description:</div>{{ recipe.description }}
+    </div>
+    <div class="d-flex mb-3">
+      <div class="text-end me-4" style="min-width: 120px">Disclaimer:</div>{{ recipe.disclaimer }}
+    </div>
+    <div class="d-flex mb-3">
+      <div class="text-end me-4" style="min-width: 120px">Created:</div>{{ recipe.created }}
+    </div>
+    <div class="d-flex">
+      <div class="text-end me-4" style="min-width: 120px">Last Updated:</div>{{ recipe.updated }}
+    </div>
+    {% if recommendations is defined %}
+      <div class="text-center m-2">Recommendations before you begin:</div>
+      <div>
+        <table class="table table-hover">
+          {% for rec in recommendations %}
+          <tbody>
+            <tr>
+              <td colspan="1">
+                  <div class="p-2 mt-1 recipe-recommendation">
+                  {{ rec }}
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+      </div>
+    {% endif %}
   </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingTwo">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        Steps Form
-      </button>
-    </h2>
-    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-      
-        {{ form(formSteps) }}
 
-        
-        
+  {# Ingredients block #}
+  <div class="col-lg-4 recipe-ingredient overflow-hidden">
+    <div class="mb-1 ms-3">
+      List of Ingredients:
+    </div>
+    {% for ingredient in ingredients %}
+      <div class="d-flex mb-1">
+        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;">
+          <strong>{{ ingredient.name }}:</strong>
+        </div>
+        <div class="text-bottom" style="min-width: 90px">
+          <span>{{ ingredient.qty }} {{ ingredient.unitAbb }}</span>
+        </div>
+        <div>
+          <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#ingredientDeleteModal" 
+                  data-bs-name={{ ingredient.name }}
+                  data-bs-qty={{ ingredient.qty }}
+                  data-bs-unit={{ ingredient.unitAbb }}
+                  data-bs-path={{ path('app_ingredient_delete', {'recipeId': recipe.id, 'ingredientId': ingredient.id } ) }}>
+                  x
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+
+    {# Ingredient Form #}
+    {% if owner %}
+    <div class="m-2 container">
+      {{ form_start(formIngredient) }}
+      <div class="d-flex align-items-end">
+        <div>
+        {{ form_errors(formIngredient) }}
+        </div>
+        <div class="col-4">
+        {{ form_row(formIngredient.name) }}
+        </div>
+        <div class="col-2">
+        {{ form_row(formIngredient.qty) }}
+        </div>
+        <div class="col-3">
+        {{ form_row(formIngredient.unit) }}
+        </div>
+        <div class="col-1">
+        </div>
+        <div class="col-2">
+        {{ form_end(formIngredient) }}
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingThree">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        Recipe Recommendation Form
-      </button>
-    </h2>
-    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-      
-        {{ form(formRecommendations) }}
-      </div>
-    </div>
+    {% endif %}
   </div>
 </div>
 
+{# Recipe ID variable #}
+{% set id = app.request.get('id') %}
 
-
-
+{# Status and visibility control panel #}
+{% if owner %}
+<div class="text-center text-light p-3 mb-4 owner-control">Control recipe status and visibility
+  <div class="text-center">
+    <div class="mb-4">
+      {% if recipe.status == 'published' %}
+        <a class="btn btn-primary recipe-status-button" href='#'>Published</a>
+        <a class="btn btn-outline-secondary recipe-status-button" href={{ path('app_recipe_update_status', {'id': id, 'statusType': 'status', 'statusMessage': 'draft'} ) }}>Draft</a>
+      {% else %}
+        <a class="btn btn-outline-primary recipe-status-button" href={{ path('app_recipe_update_status', {'id': id, 'statusType': 'status', 'statusMessage': 'published'} ) }}>Published</a>
+        <a class="btn btn-secondary recipe-status-button"  href='#'>Draft</a>
+      {% endif %}
+    </div>
+    <div class="mb-2">
+    
+      {% if recipe.visibility == 'public' %}
+        <a class="btn btn-success recipe-status-button" href='#'>Public</a>
+        <a class="btn btn-outline-danger recipe-status-button" href={{ path('app_recipe_update_status', {'id': id, 'statusType': 'visibility', 'statusMessage': 'private'} ) }}>Private</a>
+      {% else %}
+        <a class="btn btn-outline-success recipe-status-button" href={{ path('app_recipe_update_status', {'id': id, 'statusType': 'visibility', 'statusMessage': 'public'} ) }}>Public</a>
+        <a class="btn btn-danger recipe-status-button"  href='#'>Private</a>
+      {% endif %}
+    </div>
+  </div>
 </div>
+{% endif %}
+
+{# Recipe Steps Table #}
+<table class="table table-hover">
+  <tbody>
+    {% for step in steps %}
+    <tr data-bs-toggle="modal" 
+        data-bs-target="#stepManagerModal" 
+        data-bs-id={{ step.id }}
+        data-bs-step={{ step.step }}
+        data-bs-text="{{ step.text }}"
+        data-bs-delete-path={{ path('app_step_delete', {'recipeId': recipe.id, 'stepId': step.id } ) }}>
+      <th colspan="1">Step {{ step.step }}</th>
+      <td colspan="1">
+        {{ step.text }}
+        {% if step.recommendations is defined %}
+          {% for rec in step.recommendations %}
+          <div class="p-2 mt-1 recipe-step-recommendation">
+          {{ rec }}
+          </div>
+          {% endfor %}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# Recipe Steps Form #}
+{% if owner %}
+<div class="m-2 container row flex-row align-items-center">
+  {% form_theme formSteps with ['foundation_5_layout.html.twig'] only %}
+  {{ form_start(formSteps, {'attr': {'class': 'align-items-center'}}) }}
+  <div class="d-flex align-items-center">
+    <div>
+      {{ form_errors(formSteps) }}
+    </div>
+    <div class="col-9">
+      {{ form_row(formSteps.text) }}
+    </div>
+    <div class="col-1">
+    </div>
+    <div class="col-2">
+  {{ form_end(formSteps) }}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# Include Modals #}
+{% include 'recipe/components/modal.html.twig' %}
+
+{# {{ dump(recipe) }} #}
+{# {{ dump(ingredients) }} #}
+{{ dump(steps) }}
+{# {{ dump(recommendations) }} #}
+{# {{ dump(form) }} #}
+
 {% endblock %}
+

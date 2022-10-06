@@ -50,4 +50,41 @@ class StepsController extends AbstractController
             'form'         => $form
         ]);
     }
+
+    #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}', name: 'app_step_delete')]
+    public function delete(ManagerRegistry $doctrine, int $recipeId, int $stepId) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $steps = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
+
+        var_dump($steps);
+
+        $entityManager = $doctrine->getManager();
+        // $entityManager->remove($ingredient);
+        // $entityManager->flush();
+
+        return false;
+        
+        // return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
+    private function checkRecipeOwner($id, ManagerRegistry $doctrine): mixed
+    {
+        $user   = $this->getUser();
+        if ($user === null) {
+            return false;
+        }
+
+        $author = $doctrine->getRepository(Recipe::class)->find($id)->getAuthor();
+
+        if ($author == $user->getId()) {
+            return true;
+        }
+
+        return false;
+    }
 }

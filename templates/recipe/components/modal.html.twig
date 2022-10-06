@@ -1,0 +1,79 @@
+{# Add Modal CSS #}
+<link href="{{ asset('css/modal.css') }}"  rel="stylesheet">
+
+{# INGREDIENT MODAL #}
+<div class="modal fade" id="ingredientDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cancel</button>
+        <a id="deleteIngredientConfirm" href="" ><button type="button" class="btn btn-danger">Delete</button></a>
+    </div>
+    </div>
+</div>
+</div>
+
+
+{# STEP MODAL #}
+<div class="modal fade" id="stepManagerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <textarea class="text form-control col-12" rows="4">
+        </textarea>
+
+        {# 
+        step text area
+        step reorganizer
+        step deletion
+        rec show
+        rec add
+        rec remove #}
+
+
+        {# <form>
+        <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+        </div>
+        <div class="mb-3">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+        </div>
+        </form> #}
+    </div>
+    <div class="modal-footer">
+
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Delete step
+                </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                        <a id="deleteStepConfirm" href="" ><button type="button" class="btn btn-danger">Confirm</button></a>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Move step up</button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Move step down</button>
+    </div>
+    </div>
+</div>
+</div>
+</div>
+
+{# Import Modal Scripts #}
+<script src="{{ asset('js/modal.js') }}"></script>

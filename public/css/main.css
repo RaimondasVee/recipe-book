@@ -1,10 +1,65 @@
 body {
     background: url(../images/BG/1.png) no-repeat 50% 0%, linear-gradient(to right, #fddcb9 0%, #3c271d 50%);
+    background-attachment: fixed;
+}
+
+
+
+.container-main {
+    margin-top: 4em;
 }
 
 .container-sm {
-    
     background-color: #7a513bc2;
     border: 3px solid #f7d5a3;
     border-radius: 14px;
 }
+
+
+
+
+.recipe-status-button {
+    min-width: 200px;
+}
+
+
+.recipe-row {
+    background-color: #401c076b;
+    border: 1px solid #ff8e7cb3;
+    border-radius: 5px;
+    color: #edd2a9;
+    padding: 10px 0px 10px 0px;
+}
+
+.recipe-ingredient {
+    background-color: #ddb37f;
+    height: 100%;
+    border: 2px black solid;
+    border-radius: 4px;
+}
+
+.recipe-step-recommendation {
+    background: linear-gradient(90deg, #ff094dbf, transparent);
+    border-radius: 15px;
+    border: 2px #6b4734 solid;
+}
+
+.recipe-recommendation {
+    background: linear-gradient(270deg, #ffffff4a, #fbd2b6)
+}
+
+.owner-control {
+    position: relative;
+    width: 120%;
+    left: -10%;
+    border-radius: 50px;
+    background-color: #1e1e1ec7;
+}
+
+.modal-content {
+    background-color: #8d6040;
+    border: 9px solid #c5c5c5;
+    border-radius: 20px;
+    color: wheat;
+}
+

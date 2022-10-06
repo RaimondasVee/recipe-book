@@ -1,20 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RecipeController!{% endblock %}
+{% block title %}Recipes - Recipe Book{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container text-center">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {# <table class="table text-light">
+            <thead>
+                <tr>
+                    <th scope="col">Status</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Link</th>
+                </tr>
+            </thead>
+            <tbody> #}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'X:/Development/Web development/Symfony project/recipe_book_symfony/src/Controller/RecipeController.php'|file_link(0) }}">src/Controller/RecipeController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'X:/Development/Web development/Symfony project/recipe_book_symfony/templates/recipe/index.html.twig'|file_link(0) }}">templates/recipe/index.html.twig</a></code></li>
-    </ul>
-</div>
+            {% for recipe in recipes %}
+
+            <div class="row mb-4 recipe-row overflow-hidden align-items-center">
+                <div class="col-lg-1">
+                    {% if recipe.status == 'published' %}
+                        <span class="badge rounded-pill text-bg-success">Published</span>
+                    {% elseif recipe.status == 'draft' %}
+                        <span class="badge rounded-pill text-bg-secondary">Draft</span>
+                    {% endif %}
+                </div>
+                {% if personal %}
+                    <div class="col-lg-1">                        
+                        {% if recipe.visibility == 'public' %}
+                            <span class="badge rounded-pill text-bg-primary">Public</span>
+                        {% elseif recipe.visibility == 'private' %}
+                            <span class="badge rounded-pill text-bg-danger">Private</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div class="col-lg-3">
+                    {{ recipe.name }}
+                </div>
+                {% if not personal %}
+                    <div class="col-lg-3">
+                        {{ recipe.description }}
+                    </div>
+                    <div class="col-lg-3">
+                        {{ recipe.disclaimer }}
+                    </div>
+                {% else %}
+                    <div class="col-lg-5">
+                        {{ recipe.description }}
+                    </div>
+                {% endif %}
+                <div class="col-lg-1">
+                    {{ recipe.author }}
+                </div>
+                <div class="col-lg-1">
+                    <a type="button" class="btn btn-warning btn-sm" href={{ path('app_recipe', {'id': recipe.id}) }}>View</a>
+                </div>
+            </div>
+
+
+                {# <tr>
+                    <th scope="row">
+                        {% if recipe.status == 'published' %}
+                            <span class="badge rounded-pill text-bg-success">Published</span>
+                        {% elseif recipe.status == 'draft' %}
+                            <span class="badge rounded-pill text-bg-secondary">Draft</span>
+                        {% endif %}
+                    </th>
+                    <td>{{ recipe.name }}</td>
+                    <td>{{ recipe.author }}</td>
+                    <td><a type="button" class="btn btn-warning btn-sm" href={{ path('app_recipe', {'id': recipe.id}) }}>View</a></td>
+                </tr> #}
+
+            {% endfor %}
+
+            {# </tbody>
+        </table> #}
+    </div>
+    
 {% endblock %}

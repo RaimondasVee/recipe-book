@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="text-light">Page not found</h1>
+    <p class="text-light">
+        The requested page couldn't be located. Check for any URL misspelling or <a href="{{ path('app_home') }}">return home</a>.
+    </p>
+
+    <pre class="text-light">{{ exception.traceAsString }}</pre>
+{% endblock %}

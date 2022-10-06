@@ -16,7 +16,7 @@ class RecommendationsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('recText', TextType::class)
+            ->add('recText', TextType::class, ['label' => 'Add recommendation'])
             ->add('type', HiddenType::class)
             ->add('typeId', HiddenType::class)
             ->add('save', SubmitType::class)
