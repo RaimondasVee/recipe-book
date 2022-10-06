@@ -106,7 +106,7 @@ class RecipeController extends AbstractController
 
         // Build Steps
         $recipeSteps = $steps->findByRecipeId($id);
-        $stepNumber  = 0;
+        $stepNumber  = -1;
 
         if (!empty($recipeSteps)){
             foreach ($recipeSteps as $key => $value) {

@@ -25,7 +25,6 @@ class StepsController extends AbstractController
     {        
         $entityManager = $doctrine->getManager();
         $steps = new Steps();
-        var_dump($id);
         $steps->setRecipeId($id);
 
         $form = $this->createForm(StepsType::class, $steps);
@@ -51,6 +50,24 @@ class StepsController extends AbstractController
         ]);
     }
 
+    #[Route('/recipe/show/{recipeId}/steps/update/{stepId}', name: 'app_step_update')]
+    public function update(Request $request, ManagerRegistry $doctrine, int $recipeId, int $stepId) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $text = $request->request->get('text');
+        $step = $doctrine->getRepository(Steps::class)->find($stepId);
+        $step->setText($text);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
     #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}', name: 'app_step_delete')]
     public function delete(ManagerRegistry $doctrine, int $recipeId, int $stepId) {
         $owner = $this->checkRecipeOwner($recipeId, $doctrine);
@@ -60,16 +77,60 @@ class StepsController extends AbstractController
         }
 
         $steps = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
-
-        var_dump($steps);
+        $stepToDelete = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
 
         $entityManager = $doctrine->getManager();
-        // $entityManager->remove($ingredient);
-        // $entityManager->flush();
+        $entityManager->remove($steps[$stepToDelete]);
 
-        return false;
+        for ($i=$stepToDelete; $i <= count($steps); $i++) { 
+            if (!isset($steps[$i+1])){
+                break;
+            }
+
+            $steps[$i+1]->setStep($i);
+        }
+        $entityManager->flush();
         
-        // return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
+    #[Route('/recipe/show/{recipeId}/steps/order/{stepId}/{direction}', name: 'app_step_order')]
+    public function order(ManagerRegistry $doctrine, int $recipeId, int $stepId, string $direction) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $steps = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
+        $stepToMove = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
+
+        switch ($direction) {
+            case 'up':
+                if ($stepToMove == 0) {
+                    return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+                }
+                $steps[$stepToMove]->setStep($stepToMove - 1);
+                $steps[$stepToMove - 1]->setStep($stepToMove);
+
+                break;
+            case 'down':
+                if ($stepToMove == count($steps) - 1) {
+                    return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+                }
+                $steps[$stepToMove]->setStep($stepToMove + 1);
+                $steps[$stepToMove + 1]->setStep($stepToMove);
+
+
+                break;
+            default:
+                return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
     }
 
     private function checkRecipeOwner($id, ManagerRegistry $doctrine): mixed
