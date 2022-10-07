@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StepsController extends AbstractController
 {
-
+    // THIS NEEDS UPDATING!!!!!!!!!!!!!!!!!!!!! AUTHENTICATION!!
     #[Route('/recipe/show/{id}/steps/new', name: 'app_recipe_step_new')]
     public function new(Request $request, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id): Response
     {        
@@ -58,55 +58,48 @@ class StepsController extends AbstractController
             $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
         }
 
-        $text = $request->request->get('text');
-        $step = $doctrine->getRepository(Steps::class)->find($stepId);
-        $step->setText($text);
+        $text           = $request->request->get('text');
+        $step           = $doctrine->getRepository(Steps::class)->find($stepId);
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($recipeId);
+        $entityManager  = $doctrine->getManager();
 
-        $entityManager = $doctrine->getManager();
+        $step->setText($text);
+        $recipe->setUpdated(new \DateTime('now'));
+
         $entityManager->flush();
         
         return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
     }
 
     #[Route('/recipe/show/{recipeId}/steps/update/{stepId}/rec/{recId}', name: 'app_step_recommendation_update')]
-    public function updateRecommendation(Request $request, ManagerRegistry $doctrine, int $recipeId, int $stepId, int $recId) {
+    public function updateRecommendation(Request $request, ManagerRegistry $doctrine, int $recipeId, int $stepId, mixed $recId) {
         $owner = $this->checkRecipeOwner($recipeId, $doctrine);
 
         if (!$owner) {      
             $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
         }
 
-        $text = $request->request->get('text');
-        $recommendation = $doctrine->getRepository(Recommendations::class)->find($recId);
-        $recommendation->setRecText($text);
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($recipeId);
+        $entityManager  = $doctrine->getManager();
+        $text           = $request->request->get('text');
 
-        $entityManager = $doctrine->getManager();
-        $entityManager->flush();
-        
-        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
-    }
+        if ($recId == 'null') {
+            // Create new recommendation
+            $recommendation = new Recommendations();
 
-    #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}', name: 'app_step_delete')]
-    public function delete(ManagerRegistry $doctrine, int $recipeId, int $stepId) {
-        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+            $recommendation->setRecText($text);
+            $recommendation->setType('step');
+            $recommendation->setTypeId($stepId);
+            $entityManager->persist($recommendation);
+        } else {
+            // Update existing recommendation
+            $recommendation = $doctrine->getRepository(Recommendations::class)->find($recId);
 
-        if (!$owner) {      
-            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+            $recommendation->setRecText($text);
         }
 
-        $steps = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
-        $stepToDelete = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
+        $recipe->setUpdated(new \DateTime('now'));
 
-        $entityManager = $doctrine->getManager();
-        $entityManager->remove($steps[$stepToDelete]);
-
-        for ($i=$stepToDelete; $i <= count($steps); $i++) { 
-            if (!isset($steps[$i+1])){
-                break;
-            }
-
-            $steps[$i+1]->setStep($i);
-        }
         $entityManager->flush();
         
         return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
@@ -120,8 +113,10 @@ class StepsController extends AbstractController
             $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
         }
 
-        $steps = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
-        $stepToMove = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($recipeId);
+        $steps          = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
+        $stepToMove     = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
+        $entityManager  = $doctrine->getManager();
 
         switch ($direction) {
             case 'up':
@@ -139,13 +134,62 @@ class StepsController extends AbstractController
                 $steps[$stepToMove]->setStep($stepToMove + 1);
                 $steps[$stepToMove + 1]->setStep($stepToMove);
 
-
                 break;
             default:
                 return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
         }
 
-        $entityManager = $doctrine->getManager();
+        $recipe->setUpdated(new \DateTime('now'));
+
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
+    #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}', name: 'app_step_delete')]
+    public function delete(ManagerRegistry $doctrine, int $recipeId, int $stepId) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($recipeId);
+        $steps          = $doctrine->getRepository(Steps::class)->findBy(['recipeId' => $recipeId], ['step' => 'asc']);
+        $stepToDelete   = $doctrine->getRepository(Steps::class)->find($stepId)->getStep();
+        $entityManager  = $doctrine->getManager();
+
+        $entityManager->remove($steps[$stepToDelete]);
+        $recipe->setUpdated(new \DateTime('now'));
+
+        for ($i=$stepToDelete; $i <= count($steps); $i++) { 
+            if (!isset($steps[$i+1])){
+                break;
+            }
+
+            $steps[$i+1]->setStep($i);
+        }
+
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);
+    }
+
+    #[Route('/recipe/show/{recipeId}/steps/delete/{stepId}/rec/{recId}', name: 'app_step_delete_recommendation')]
+    public function deleteRecommendation(ManagerRegistry $doctrine, int $recipeId, int $stepId, int $recId) {
+        $owner = $this->checkRecipeOwner($recipeId, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($recipeId);
+        $recToDelete    = $doctrine->getRepository(Recommendations::class)->find($recId);
+        $entityManager  = $doctrine->getManager();
+
+        $entityManager->remove($recToDelete);
+        $recipe->setUpdated(new \DateTime('now'));
+
         $entityManager->flush();
         
         return $this->redirectToRoute('app_recipe', ['id' => $recipeId]);

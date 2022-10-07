@@ -1,6 +1,32 @@
 {# Add Modal CSS #}
 <link href="{{ asset('css/modal.css') }}"  rel="stylesheet">
 
+{# INFO MODAL #}
+<div class="modal fade" id="recipeManagerModal" aria-hidden="true" aria-labelledby="exampleModalTosggleLabel2" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Edit Recipe Info</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post" id="recipeEdit">
+            <textarea form="stepRecEdit" id="recipeEditText" name="text" class="text form-control col-12" rows="2"></textarea>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex flex-row-reverse justify-content-between col-12 align-items-center">
+            <div>
+                <button class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
+                <button class="btn btn-warning" id="recipeInfoSubmitButton" type="submit" form="recipeEdit" value="recipeEdit">Save Changes</button>
+            </div>
+            <button class="btn btn-danger ms-2" id="deleteStepRecButton">Delete Property</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {# INGREDIENT MODAL #}
 <div class="modal fade" id="ingredientDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -74,13 +100,16 @@
       </div>
       <div class="modal-body">
         <form action="" method="post" id="stepRecEdit">
-            <textarea form="stepRecEdit" id="stepRecEditText" name="text" class="text form-control col-12" rows="4">
-            </textarea>
+            <textarea form="stepRecEdit" id="stepRecEditText" name="text" class="text form-control col-12" rows="4"></textarea>
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="returnButton" data-bs-target="#stepManagerModal" data-bs-toggle="modal">Return</button>
-        <button class="btn btn-warning" id="stepRecSubmitButton" type="submit" form="stepRecEdit" value="stepRecEdit">Save Changes</button>
+        <div class="d-flex flex-row-reverse justify-content-between col-12 align-items-center">
+            <div>
+                <button class="btn btn-secondary" id="returnButton" data-bs-target="#stepManagerModal" data-bs-toggle="modal">Return</button>
+                <button class="btn btn-warning" id="stepRecSubmitButton" type="submit" form="stepRecEdit" value="stepRecEdit">Save Changes</button>
+            </div>
+            <button class="btn btn-danger ms-2" id="deleteStepRecButton">Delete Recommendation</button>
       </div>
     </div>
   </div>

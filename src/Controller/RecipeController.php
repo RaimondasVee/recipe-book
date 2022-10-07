@@ -269,7 +269,38 @@ class RecipeController extends AbstractController
         ]);
     }
 
-    #[Route('/recipe/udpdate/{id}/{statusType}/{statusMessage}', name: 'app_recipe_update_status')]
+    #[Route('/recipe/udpdate/{id}/new/recommendation/{recContent}', name: 'app_recipe_new_recommendation')]
+    public function newRecommendation(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $recContent): Response
+    {
+        $owner = $this->checkRecipeOwner($id, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        
+        $recommendation = new Recommendations();
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($id);
+        $entityManager  = $doctrine->getManager();
+
+        $recommendation->setRecText($recContent);
+        $recommendation->setType('recipe');
+        $recommendation->setTypeId($recipe->getId());
+
+        $recipe->setUpdated(new \DateTime('now'));
+
+        $errors = $validator->validate($recipe);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, 400);
+        }
+
+        // $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_recipe', ['id' => $id]);
+    }
+
+    #[Route('/recipe/udpdate/{id}/status/{statusType}/{statusMessage}', name: 'app_recipe_update_status')]
     public function updateStatus(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $statusType, string $statusMessage): Response
     {
         $owner = $this->checkRecipeOwner($id, $doctrine);
@@ -313,12 +344,81 @@ class RecipeController extends AbstractController
                 break;
         }
 
+        $recipe->setUpdated(new \DateTime('now'));
+
         $errors = $validator->validate($recipe);
         if (count($errors) > 0) {
             return new Response((string) $errors, 400);
         }
 
         $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_recipe', ['id' => $id]);
+    }
+
+    #[Route('/recipe/udpdate/{id}/info/{infoType}/{infoContent}', name: 'app_recipe_update_info')]
+    public function updateInfo(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $infoType, string $infoContent): Response
+    {
+        $owner = $this->checkRecipeOwner($id, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($id);
+        $entityManager  = $doctrine->getManager();
+
+        switch ($infoType) {
+            case 'name':
+                $recipe->setName($infoContent);
+                break;
+            case 'description':
+                $recipe->setDescription($infoContent);
+                break;
+            case 'disclaimer':
+                $recipe->setDisclaimer($infoContent);
+                break;
+            default:
+                $this->denyAccessUnlessGranted('DENY', 'Unknown Operation', 'The operation is not defined');
+                break;
+        }
+
+        $recipe->setUpdated(new \DateTime('now'));
+
+        $errors = $validator->validate($recipe);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, 400);
+        }
+
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_recipe', ['id' => $id]);
+    }
+
+    #[Route('/recipe/udpdate/{id}/recommendation/{recId}/{recContent}', name: 'app_recipe_update_recommendation')]
+    public function updateRecommendation(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $recId, string $recContent): Response
+    {
+        $owner = $this->checkRecipeOwner($id, $doctrine);
+
+        if (!$owner) {      
+            $this->denyAccessUnlessGranted('DENY', 'Not Allowed', 'You\'re not authorized to perform this action');
+        }
+
+        $recipe         = $doctrine->getRepository(Recipe::class)->find($id);
+        $recommendation = $doctrine->getRepository(Recommendation::class)->find($recId);
+        $entityManager  = $doctrine->getManager();
+
+        $recommendation->setRecText($recContent);
+        $recipe->setUpdated(new \DateTime('now'));
+
+        $errors = $validator->validate($recipe);
+        if (count($errors) > 0) {
+            return new Response((string) $errors, 400);
+        }
+
+        // $entityManager->persist($recipe);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_recipe', ['id' => $id]);

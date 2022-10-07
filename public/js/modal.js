@@ -69,7 +69,7 @@ stepModal.addEventListener('show.bs.modal', event => {
   }
 })
 
-// Step Modal
+// Step Recommendation Modal
 const recModal = document.getElementById('recManagerModal')
 recModal.addEventListener('show.bs.modal', event => {
   // Button that triggered the modal
@@ -81,8 +81,14 @@ recModal.addEventListener('show.bs.modal', event => {
 
   const textarea = recModal.querySelector('#stepRecEditText')
   const form = recModal.querySelector('#stepRecEdit')
+  const deleteButton = recModal.querySelector('#deleteStepRecButton')
+  deleteButton.classList.remove('disabled');
 
   form.setAttribute('action', `/recipe/show/${recipeId}/steps/update/${stepId}/rec/${recId}`)
-  textarea.textContent = button.getAttribute('data-rec-0-text')
-
+  if (button.getAttribute('data-rec-0-text') !== 'null') {
+    deleteButton.setAttribute('onclick',`window.location.href='/recipe/show/${recipeId}/steps/delete/${stepId}/rec/${recId}'`)
+    textarea.textContent = button.getAttribute('data-rec-0-text')
+  } else {
+    deleteButton.classList.add('disabled');
+  }
 })
