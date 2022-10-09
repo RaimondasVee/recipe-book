@@ -357,9 +357,11 @@ class RecipeController extends AbstractController
         return $this->redirectToRoute('app_recipe', ['id' => $id]);
     }
 
-    #[Route('/recipe/udpdate/{id}/info/{infoType}/{infoContent}', name: 'app_recipe_update_info')]
-    public function updateInfo(ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $infoType, string $infoContent): Response
+    #[Route('/recipe/update/{id}/info/{infoType}', name: 'app_recipe_update_info')]
+    public function updateInfo(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, int $id, string $infoType): Response
     {
+        $infoContent = $request->request->get('text');
+
         $owner = $this->checkRecipeOwner($id, $doctrine);
 
         if (!$owner) {      

@@ -1,3 +1,25 @@
+// Recipe Modal
+const recipeModal = document.getElementById('recipeManagerModal')
+recipeModal.addEventListener('show.bs.modal', event => {
+  console.log('recipe modal')
+  const button = event.relatedTarget
+
+  const type = button.getAttribute('info-type')
+  let text = button.getAttribute('info-text')
+  const recipeId = button.getAttribute('info-id')
+  const formSave = recipeModal.querySelector('#recipeEdit')
+
+  const modalTitle = recipeModal.querySelector('.modal-title')
+  const modalTextarea = recipeModal.querySelector('#recipeEditText')
+  // const modalConfirm = recipeModal.querySelector('#recipeInfoSubmitButton')
+
+  // modalConfirm.setAttribute('onclick',`window.location.href='/recipe/update/${recipeId}/info/${type}/${text}'`)
+
+  formSave.setAttribute('action', `/recipe/update/${recipeId}/info/${type}`)
+  modalTextarea.textContent = text
+  modalTitle.textContent = `Editing Recipe ${type[0].toUpperCase() + type.slice(1)}`
+})
+
 // Ingredient Modal
 const ingredientModal = document.getElementById('ingredientDeleteModal')
 ingredientModal.addEventListener('show.bs.modal', event => {

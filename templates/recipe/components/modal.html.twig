@@ -6,19 +6,19 @@
   <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Edit Recipe Info</h1>
+        <h1 class="modal-title fs-5" id="recipeInfoTitle">Edit Recipe Info</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form action="" method="post" id="recipeEdit">
-            <textarea form="stepRecEdit" id="recipeEditText" name="text" class="text form-control col-12" rows="2"></textarea>
+            <textarea form="recipeEdit" id="recipeEditText" name="text" class="text form-control col-12" rows="2"></textarea>
         </form>
       </div>
       <div class="modal-footer">
         <div class="d-flex flex-row-reverse justify-content-between col-12 align-items-center">
             <div>
                 <button class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
-                <button class="btn btn-warning" id="recipeInfoSubmitButton" type="submit" form="recipeEdit" value="recipeEdit">Save Changes</button>
+                <button class="btn btn-warning" type="submit" form="recipeEdit" value="Submit">Save Changes</button>
             </div>
             <button class="btn btn-danger ms-2" id="deleteStepRecButton">Delete Property</button>
         </div>
@@ -78,9 +78,9 @@
                                 </button>
                             </h2>
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                        <a id="deleteStepConfirm" href="" ><button type="button" class="btn btn-danger">Confirm</button></a>
-                                </div>
+                            <div class="accordion-body">
+                                    <a id="deleteStepConfirm" href="" ><button type="button" class="btn btn-danger">Confirm</button></a>
+                            </div>
                             </div>
                         </div>
                     </div>

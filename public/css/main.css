@@ -63,3 +63,12 @@ body {
     color: wheat;
 }
 
+/* .ui-hover:hover + .ui-hover,
+.ui-hover:hover ~ .ui-hover{
+    background-color: #c5c5c5;
+} */
+
+.ui-hover:hover .ui-hover-child:not(:hover){
+    opacity: 0.7;
+    
+}
