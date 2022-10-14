@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recipe Name{% endblock %}
+{% block title %}{{ sitename }} - {{ title }}{% endblock %}
 
 {% block body %}
 <h1> {{ recipe.name }} </h1>
@@ -133,7 +133,7 @@
 {% endif %}
 
 {# Recipe Steps Table #}
-<table class="table table-hover">
+<table class="table table-hover" id="steps-table">
   <tbody>
     
     {% for step in steps %}
@@ -152,7 +152,7 @@
           {% endif %}
         >
       <th colspan="1">Step {{ step.step + 1 }}</th>
-      <td colspan="1">
+      <td colspan="6">
         {{ step.text }}
         {% if step.recommendations is defined %}
           {% for rec in step.recommendations %}

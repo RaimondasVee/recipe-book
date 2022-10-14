@@ -1,12 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}{{ sitename }} - {{ title }}{% endblock %}
 
 {% block body %}
     <div class="m-4">
         <h1 class="text-light">Welcome Home</h1>
 
-        {{ dump() }}
+        {% if app.debug %}
+            {{ dump(app, app.user, app.request, app.session, app.flashes, app.environment, app.token) }}
+        {% endif %}
 
     </div>
 {% endblock %}

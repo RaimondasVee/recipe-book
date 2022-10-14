@@ -21,6 +21,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RecipeController extends AbstractController
 {
+    public $title = 'Recipe';
+
     #[Route('/recipe/index', name: 'app_recipes')]
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
@@ -44,6 +46,7 @@ class RecipeController extends AbstractController
         }
 
         return $this->render('recipe/index.html.twig', [
+            'title'    => $this->title,
             'recipes'  => $recipes,
             'personal' => $personal,
         ]);
@@ -217,6 +220,7 @@ class RecipeController extends AbstractController
         }
         
         return $this->renderForm('recipe/show.html.twig', [
+            'title'               => $this->title,
             'owner'               => $owner,
             'recipe'              => $recipeData,
             'ingredients'         => $ingredientData,
@@ -225,6 +229,7 @@ class RecipeController extends AbstractController
             'formIngredient'      => $form['ingredient'],
             'formSteps'           => $form['steps'],
             'formRecommendations' => $form['recommendations'],
+            // '_fragment'           => '#test',
         ]);
     }
     
@@ -265,7 +270,8 @@ class RecipeController extends AbstractController
         }
 
         return $this->renderForm('recipe/new.html.twig', [
-            'form' => $form,
+            'title' => $this->title,
+            'form'  => $form,
         ]);
     }
 
@@ -380,6 +386,15 @@ class RecipeController extends AbstractController
                 break;
             case 'disclaimer':
                 $recipe->setDisclaimer($infoContent);
+                break;
+            case 'recommendation':
+                // new or update?c
+
+
+
+
+
+                // TO BE ADDED!!!!
                 break;
             default:
                 $this->denyAccessUnlessGranted('DENY', 'Unknown Operation', 'The operation is not defined');

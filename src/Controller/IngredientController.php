@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class IngredientController extends AbstractController
 {
+    public $title = 'Ingredients';
+
     #[Route('/ingredient/create', name: 'create_ingredient')]
     public function createProduct(ManagerRegistry $doctrine, ValidatorInterface $validator): Response
     {

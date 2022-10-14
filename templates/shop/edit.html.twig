@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ sitename }} - {{ title }}{% endblock %}
+
+{% block body %}
+
+
+
+
+
+
+<div class="row mb-4 overflow-hidden align-items-center">
+
+  <div class="col-lg-4 recipe-ingredient overflow-hidden">
+    <div class="mb-1 ms-3">
+      Shopping List:
+    </div>
+      <div class="d-flex mb-1">
+        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Name:</strong></div>
+        <div class="text-bottom" style="min-width: 90px">{{ shop.name }}</div>
+      </div>
+      <div class="d-flex mb-1">
+        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Date Created:</strong></div>
+        <div class="text-bottom" style="min-width: 90px">{{ shop.date|date('Y-m-d') }}</div>
+      </div>
+      <div class="d-flex mb-1">
+        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Dishes in List:</strong></div>
+        <div class="text-bottom" style="min-width: 90px">{{ shop.recipes|length }}</div>
+      </div>
+      <div class="d-flex mb-1">
+        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Ingredients:</strong></div>
+        {# <div class="text-bottom" style="min-width: 90px">{{ shop. }}</div> #}
+      </div>
+  </div>
+
+    <div class="recipe-row col-lg-8">
+        <h2 class="ms-2">Recipes in this List:</h2>
+        <table  class="table table-recipe table-hover text-light text-center" 
+                data-toggle="table"  
+                data-mobile-responsive="true">
+            <thead>
+                <tr>
+                    <th data-field="author">Owner</th>
+                    <th data-field="name" data-sortable="true">Name</th>
+                    <th data-field="view">View</th>
+                    <th data-field="updated" data-sortable="true">Updated</th>
+                    <th data-field="remove">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in recipesInList %}
+                <tr>
+                    {# Author Pill #}
+                    <td colspan="">               
+                        {% if list.author == user %}
+                            <span class="badge rounded-pill text-bg-warning">My Recipe</span>
+                        {% else %}
+                            <span class="badge rounded-pill text-bg-secondary">Public Recipe</span>
+                        {% endif %}
+                    </td>
+                    <td colspan="">{{ list.name }}</td>
+                    <td colspaw=""><a type="button" class="btn btn-secondary btn-sm" href={{ path('app_recipe', {'id': list.id}) }}>View</a></td>
+                    <td colspan="">{{ list.updated|date('Y-m-d') }}</td>
+                    <td colspaw=""><a type="button" class="btn btn-danger btn-sm" href={{ path('user_shop_edit_remove_recipe', {'id': shop.id, 'recipe': list.id}) }}>Remove</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<h2 class="ms-2 text-light">Recipes Available:</h2>
+<table  class="table table-recipe table-hover text-light text-center" 
+        data-toggle="table"  
+        data-pagination="true"
+        data-search="true"
+        data-mobile-responsive="true">
+    <thead>
+        <tr>
+            <th data-field="status">Status</th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="author">Owner</th>
+            <th data-field="updated" data-sortable="true">Updated</th>
+            <th data-field="view">View</th>
+            <th data-field="add">Add</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for available in recipesAvailable %}
+        <tr>
+            <td colspan="">
+                {% if available.status == 'published' %}
+                    <span class="badge rounded-pill text-bg-primary">Complete</span>
+                {% else %}
+                    <span class="badge rounded-pill text-bg-secondary">Draft</span>
+                {% endif %}
+            </td>
+            <td colspan="">{{ available.name }}</td>
+            {# Author Pill #}
+            <td colspan="">               
+                {% if available.author == user %}
+                    <span class="badge rounded-pill text-bg-warning">My Recipe</span>
+                {% else %}
+                    <span class="badge rounded-pill text-bg-secondary">Public Recipe</span>
+                {% endif %}
+            </td>
+            <td colspan="">{{ available.updated|date('Y-m-d') }}</td>
+            <td colspaw=""><a type="button" class="btn btn-secondary btn-sm" href={{ path('app_recipe', {'id': available.id}) }}>View</a></td>
+            <td colspaw=""><a type="button" class="btn btn-success btn-sm" href={{ path('user_shop_edit_add_recipe', {'id': shop.id, 'recipe': available.id}) }}>Add</a></td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+
+
+
+    {# {{ dump(shop, recipesInList, recipesAvailable) }} #}
+{% endblock %}

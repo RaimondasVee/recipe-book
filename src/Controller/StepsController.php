@@ -19,10 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StepsController extends AbstractController
 {
+    public $title = 'Steps';
+
     // THIS NEEDS UPDATING!!!!!!!!!!!!!!!!!!!!! AUTHENTICATION!!
     #[Route('/recipe/show/{id}/steps/new', name: 'app_recipe_step_new')]
     public function new(Request $request, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id): Response
-    {        
+    {
         $entityManager = $doctrine->getManager();
         $steps = new Steps();
         $steps->setRecipeId($id);
@@ -46,6 +48,7 @@ class StepsController extends AbstractController
         }
 
         return $this->renderForm('steps/new.html.twig', [
+            'title'        => $this->title,
             'form'         => $form
         ]);
     }

@@ -38,6 +38,12 @@ class Recipe
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $shop_qty = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $shop_last = null;
+
     public function getAll(): array
     {
         $array = [
@@ -152,6 +158,30 @@ class Recipe
     public function setUpdated(?\DateTimeInterface $updated): self
     {
         $this->updated = $updated;
+
+        return $this;
+    }
+
+    public function getShopQty(): ?int
+    {
+        return $this->shop_qty;
+    }
+
+    public function setShopQty(?int $shop_qty): self
+    {
+        $this->shop_qty = $shop_qty;
+
+        return $this;
+    }
+
+    public function getShopLast(): ?\DateTimeInterface
+    {
+        return $this->shop_last;
+    }
+
+    public function setShopLast(?\DateTimeInterface $shop_last): self
+    {
+        $this->shop_last = $shop_last;
 
         return $this;
     }
