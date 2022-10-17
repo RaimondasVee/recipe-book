@@ -11,112 +11,150 @@
 
 <div class="row mb-4 overflow-hidden align-items-center">
 
-  <div class="col-lg-4 recipe-ingredient overflow-hidden">
-    <div class="mb-1 ms-3">
-      Shopping List:
+    <div class="col-lg-4 recipe-ingredient overflow-hidden">
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <td><strong>Name:</strong></td>
+                    <td>{{ shop.name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Created:</strong></td>
+                    <td>{{ shop.date|date('Y-m-d') }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Dishes in List:</strong></td>
+                    <td>{{ shop.recipes|length }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex flex-row-reverse">
+            <div class="text-end m-3"><a type="button" class="btn btn-success btn-sm" href={{ path('user_shop_view', {'id': shop.id}) }}>View List</a></div>
+        </div>
     </div>
-      <div class="d-flex mb-1">
-        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Name:</strong></div>
-        <div class="text-bottom" style="min-width: 90px">{{ shop.name }}</div>
-      </div>
-      <div class="d-flex mb-1">
-        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Date Created:</strong></div>
-        <div class="text-bottom" style="min-width: 90px">{{ shop.date|date('Y-m-d') }}</div>
-      </div>
-      <div class="d-flex mb-1">
-        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Dishes in List:</strong></div>
-        <div class="text-bottom" style="min-width: 90px">{{ shop.recipes|length }}</div>
-      </div>
-      <div class="d-flex mb-1">
-        <div class="text-end me-2" style="min-width: 200px; max-width: 200px;"><strong>Ingredients:</strong></div>
-        {# <div class="text-bottom" style="min-width: 90px">{{ shop. }}</div> #}
-      </div>
-  </div>
 
     <div class="recipe-row col-lg-8">
         <h2 class="ms-2">Recipes in this List:</h2>
-        <table  class="table table-recipe table-hover text-light text-center" 
+        <table  class="table table-recipe table-hover text-light text-center" id="inListTable"
                 data-toggle="table"  
-                data-mobile-responsive="true">
+                data-mobile-responsive="true"
+                data-ajax="ajaxRequestInList"
+                >
             <thead>
                 <tr>
-                    <th data-field="author">Owner</th>
+                    <th data-field="author" data-sortable="true" data-formatter="owner">Owner</th>
                     <th data-field="name" data-sortable="true">Name</th>
-                    <th data-field="view">View</th>
+                    <th data-field="view" data-formatter="view">View</th>
                     <th data-field="updated" data-sortable="true">Updated</th>
-                    <th data-field="remove">Remove</th>
+                    <th data-field="remove" data-formatter="inListRemove">Remove</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for list in recipesInList %}
-                <tr>
-                    {# Author Pill #}
-                    <td colspan="">               
-                        {% if list.author == user %}
-                            <span class="badge rounded-pill text-bg-warning">My Recipe</span>
-                        {% else %}
-                            <span class="badge rounded-pill text-bg-secondary">Public Recipe</span>
-                        {% endif %}
-                    </td>
-                    <td colspan="">{{ list.name }}</td>
-                    <td colspaw=""><a type="button" class="btn btn-secondary btn-sm" href={{ path('app_recipe', {'id': list.id}) }}>View</a></td>
-                    <td colspan="">{{ list.updated|date('Y-m-d') }}</td>
-                    <td colspaw=""><a type="button" class="btn btn-danger btn-sm" href={{ path('user_shop_edit_remove_recipe', {'id': shop.id, 'recipe': list.id}) }}>Remove</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
         </table>
     </div>
-
 </div>
 
 <h2 class="ms-2 text-light">Recipes Available:</h2>
-<table  class="table table-recipe table-hover text-light text-center" 
+<table  class="table table-recipe table-hover text-light text-center" id="availableTable"
         data-toggle="table"  
         data-pagination="true"
         data-search="true"
-        data-mobile-responsive="true">
+        data-mobile-responsive="true"
+        data-ajax="ajaxRequestAvailable"
+        >
     <thead>
         <tr>
-            <th data-field="status">Status</th>
+            <th data-field="status" data-sortable="true" data-formatter="availableStatus">Status</th>
             <th data-field="name" data-sortable="true">Name</th>
-            <th data-field="author">Owner</th>
+            <th data-field="author" data-sortable="true" data-formatter="owner">Owner</th>
             <th data-field="updated" data-sortable="true">Updated</th>
-            <th data-field="view">View</th>
-            <th data-field="add">Add</th>
+            <th data-field="view" data-formatter="view">View</th>
+            <th data-field="add" data-formatter="availableAdd">Add</th>
         </tr>
     </thead>
-    <tbody>
-        {% for available in recipesAvailable %}
-        <tr>
-            <td colspan="">
-                {% if available.status == 'published' %}
-                    <span class="badge rounded-pill text-bg-primary">Complete</span>
-                {% else %}
-                    <span class="badge rounded-pill text-bg-secondary">Draft</span>
-                {% endif %}
-            </td>
-            <td colspan="">{{ available.name }}</td>
-            {# Author Pill #}
-            <td colspan="">               
-                {% if available.author == user %}
-                    <span class="badge rounded-pill text-bg-warning">My Recipe</span>
-                {% else %}
-                    <span class="badge rounded-pill text-bg-secondary">Public Recipe</span>
-                {% endif %}
-            </td>
-            <td colspan="">{{ available.updated|date('Y-m-d') }}</td>
-            <td colspaw=""><a type="button" class="btn btn-secondary btn-sm" href={{ path('app_recipe', {'id': available.id}) }}>View</a></td>
-            <td colspaw=""><a type="button" class="btn btn-success btn-sm" href={{ path('user_shop_edit_add_recipe', {'id': shop.id, 'recipe': available.id}) }}>Add</a></td>
-        </tr>
-    {% endfor %}
-  </tbody>
 </table>
 
+<script>
+    function ajaxRequestInList(params) {
+        var url = '{{ path('user_shop_view_recipes_in_list_json', {'id': shop.id}) }}'
+        $.get(url + '?' + $.param(params.data)).then(function (res) {
+            params.success(res)
+        })
+    }
 
+    function ajaxRequestAvailable(params) {
+        var url = '{{ path('user_shop_view_recipes_available_json', {'id': shop.id}) }}'
+        $.get(url + '?' + $.param(params.data)).then(function (res) {
+            params.success(res)
+        })
+    }
 
+    function owner(value, row, index) {
+        if (row.author == {{user}}) {
+            element = '<span class="badge rounded-pill text-bg-warning">My Recipe</span>'
+        } else {
+            element = '<span class="badge rounded-pill text-bg-secondary">Public Recipe</span>'
+        }
 
+        return [element].join('');
+    }
 
+    function view(value, row, index) {
+        url = window.location.origin + '/recipe/show/' + row.id
+        return [
+            '<a type="button" class="btn btn-secondary btn-sm" href='+url+' >View</a>'
+        ].join('');
+    }
 
-    {# {{ dump(shop, recipesInList, recipesAvailable) }} #}
+    function inListRemove(value, row, index) {
+        recipe = row.id
+        return [
+            '<button class="btn btn-danger btn-sm" onclick="inListRemoveAction('+recipe+')">Remove</button>'
+        ].join('');
+    }
+
+    function inListRemoveAction(recipe) {
+        antispam();
+        id = {{ shop.id }};
+        url = id +'/remove/' + recipe;
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#inListTable').bootstrapTable('refresh')
+                $('#availableTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    function availableStatus(value,row,index) {
+        if (row.status == 'draft') {
+            element = '<span class="badge rounded-pill text-bg-secondary">Draft</span>'
+        } else {
+            element = '<span class="badge rounded-pill text-bg-primary">Complete</span>'
+        }
+
+        return [element].join('');
+    }
+
+    function availableAdd(value, row, index) {
+        recipe = row.id
+        return [
+            '<button class="btn btn-success btn-sm" onclick="availableAddAction('+recipe+')">Add</button>'
+        ].join('');
+    }
+
+    function availableAddAction(recipe) {
+        antispam();
+        id = {{ shop.id }};
+        url = id +'/add/' + recipe;
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#inListTable').bootstrapTable('refresh')
+                $('#availableTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    function antispam() {
+        $('button').addClass('disabled');
+    }
+</script>
 {% endblock %}

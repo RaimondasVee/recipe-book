@@ -19,7 +19,9 @@ class ShopType extends AbstractType
             // ->add('user', HiddenType::class)
             // ->add('date', HiddenType::class)
             ->add('name', TextType::class, [
-                'label' => 'Create a new shopping list'
+                'label' => false,
+                'label_attr' => ['class' => 'form-label'],
+                'attr' => ['class' => 'form-control']
             ])
             // ->add('description', TextType::class, [
             //     'required' => false,
@@ -33,7 +35,10 @@ class ShopType extends AbstractType
             // ->add('recommendations')
             // ->add('created', HiddenType::class, ['data' => new \DateTime('now')])
             // ->add('updated', HiddenType::class, ['data' => new \DateTime('now')])
-            ->add('save', SubmitType::class)
+            ->add('save', SubmitType::class, [
+                'label' => 'Create New Shopping List',
+                'attr' => ['class' => 'btn-warning btn']
+                ])
         ;
 
         // https://symfony.com/doc/current/reference/forms/types/collection.html#basic-usage

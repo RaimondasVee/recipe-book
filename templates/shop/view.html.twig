@@ -3,4 +3,252 @@
 {% block title %}{{ sitename }} - {{ title }}{% endblock %}
 
 {% block body %}
+
+
+
+
+
+
+<div class="row mb-4 overflow-hidden align-items-center">
+
+    <div class="col-lg-4 recipe-ingredient overflow-hidden">
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <td><strong>Name:</strong></td>
+                    <td>{{ list.name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Created:</strong></td>
+                    <td>{{ list.date|date('Y-m-d') }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Dishes in List:</strong></td>
+                    <td>{{ list.recipes|length }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Items in List:</strong></td>
+                    <td>{{ list.ingredients|length }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex flex-row-reverse">
+            <div class="text-end m-3"><a type="button" class="btn btn-warning btn-sm" href={{ path('user_shop_edit', {'id': list.id}) }}>Edit List</a></div>
+            {% if list.ingredients|length == 0 %}
+                {% if list.recipes|length == 0 %}
+                <div class="text-end m-3"><a type="button" class="btn disabled btn-success btn-sm">Build Items</a></div>
+                {% else %}
+                <div class="text-end m-3"><a type="button" class="btn btn-success btn-sm" href={{ path('user_shop_view_build_ingredients', {'id': list.id}) }}>Build Items</a></div>
+                {% endif %}
+            {% else %}
+            <div class="text-end m-3"><a type="button" class="btn btn-danger btn-sm" href={{ path('user_shop_view_build_ingredients', {'id': list.id}) }}>Re-Build Items</a></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="recipe-row col-lg-8">
+        <h2 class="ms-2">Recipes in this List:</h2>
+        <table  class="table table-recipe table-hover text-light text-center" id="inListTable"
+                data-toggle="table"  
+                data-mobile-responsive="true"
+                data-ajax="ajaxRequestInList"
+                >
+            <thead>
+                <tr>
+                    <th data-field="author" data-sortable="true" data-formatter="owner">Owner</th>
+                    <th data-field="name" data-sortable="true">Name</th>
+                    <th data-field="view" data-formatter="view">View</th>
+                    <th data-field="updated" data-sortable="true">Updated</th>
+                    <th data-field="remove" data-formatter="inListRemove">Remove</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<h2 class="text-light">Shopping List:</h2>
+<table  class="table table-recipe table-hover text-light text-center" id="ingredientTable"
+        data-toggle="table"  
+        data-mobile-responsive="true"
+        data-show-print="true"
+        data-show-export="true"
+        data-ajax="ajaxRequest"
+        data-show-toggle="true"
+        data-show-columns="true"
+        >
+    <thead>
+        <tr>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="qty" data-formatter="edit" data-events="qtyEdit">Qty</th>
+            <th data-field="unitAbb">Unit</th>
+            <th data-field="inDish">Dish Count</th>
+            <th data-field="remove" data-formatter="remove" >Action</th>
+            <th data-field="cart" data-formatter="cart"data-sortable="true">Basket</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="text-center text-light p-3 mt-4 owner-control">Add Items to Shopping List:
+</div>
+<form id="addIngredient" class="row row-cols-sm mt-3 justify-content-center text-center">
+    <div class="col-3">
+        <label class="visually-hidden" for="addIngredientName">Ingredient</label>
+        <input type="text" class="form-control" id="addIngredientName" placeholder="Item"></input>
+    </div>
+    <div class="col-2">
+        <label class="visually-hidden" for="addIngredientQty">Quantity</label>
+        <input type="number" class="form-control" id="addIngredientQty" placeholder="Quantity" value="1"></input>
+    </div>
+    <div class="col-3">
+        <label class="visually-hidden" for="addIngredientUnit">Unit</label>
+        <select class="form-select" id="addIngredientUnit">
+            {% for unit in units %}
+                {% if unit.unitAbb == 'unit' %}
+                <option selected value={{ unit.unitAbb }}>{{ unit.unitAbb }}</option>
+                {% else %}
+                <option value={{ unit.unitAbb }}>{{ unit.unitAbb }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-2">
+        <button id="addIngredientSubmit" onclick="ajaxAddIngredient()" class="btn btn-success">Submit</button>
+    </div>
+</form>
+
+
+{# {{ dump(list, recipes) }} #}
+
+<script src="{{ asset('js/bootstrap-table-print.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-table-export.min.js') }}"></script>
+
+
+<script>
+    function ajaxRequestInList(params) {
+        var url = '{{ path('user_shop_view_recipes_in_list_json', {'id': list.id}) }}'
+        $.get(url + '?' + $.param(params.data)).then(function (res) {
+            params.success(res)
+        })
+    }
+
+    function owner(value, row, index) {
+        if (row.author == {{user}}) {
+            element = '<span class="badge rounded-pill text-bg-warning">My Recipe</span>'
+        } else {
+            element = '<span class="badge rounded-pill text-bg-secondary">Public Recipe</span>'
+        }
+
+        return [element].join('');
+    }
+
+    function view(value, row, index) {
+        url = window.location.origin + '/recipe/show/' + row.id
+        return [
+            '<a type="button" class="btn btn-secondary btn-sm" href='+url+' >View</a>'
+        ].join('');
+    }
+
+    function inListRemove(value, row, index) {
+        recipe = row.id
+        return [
+            '<button class="btn btn-danger btn-sm" onclick="inListRemoveAction('+recipe+')">Remove</button>'
+        ].join('');
+    }
+
+    function inListRemoveAction(recipe) {
+        antispam();
+        id = {{ list.id }};
+        url = window.location.origin + '/user/shop/edit/' + id +'/remove/' + recipe;
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#inListTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    document.getElementById("addIngredientSubmit").addEventListener("click", function(event){
+        event.preventDefault()
+    });
+
+    function edit(value, row, index) {
+        return [
+            '<input type="number" class="test text-center" style="max-width: 50px;" value="'+value+'"></input>'
+        ].join('')
+    }
+
+    window.qtyEdit = {
+        'click .test': function (e, value, row, index) {
+            id = {{ list.id }};
+            $(".test").change(function(){
+                url = id +'/update/ingredients/qty/' + index + '/' + $(this).val();
+                $.get(url).then(function (res) {
+                    if (res == true) {
+                        $('#ingredientTable').bootstrapTable('refresh')
+                    }
+                })
+            });
+        }
+    }
+
+    function ajaxAddIngredient() {
+        id = {{ list.id }};
+        name = $('#addIngredientName').val();
+        qty = $('#addIngredientQty').val();
+        if (qty == null) {qty = 1}
+        unit  = $('#addIngredientUnit').val();
+        url = id +'/add/ingredients/'+name+'/'+qty+'/'+unit;
+
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#ingredientTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    function ajaxRequest(params) {
+        var url = '{{ path('user_shop_view_ingredients_json', {'id': list.id}) }}'
+        $.get(url + '?' + $.param(params.data)).then(function (res) {
+            params.success(res)
+        })
+    }
+
+    function cart(value, row, index) {
+        if (value == 0) {
+                element = '<button class="btn btn-warning btn-sm" href="" onclick="ajaxUpdateCart('+index+')">Add</button>'
+        } else {
+            element = '<button class="btn btn-success btn-sm" href="" onclick="ajaxUpdateCart('+index+')">Remove</button>'
+        }
+        return [element].join('');
+    }
+
+    function ajaxUpdateCart(index) {
+        id = {{ list.id }};
+        url = id +'/update/ingredients/cart/' + index;
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#ingredientTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    function remove(value, row, index) {
+        return [
+            '<button class="btn btn-danger btn-sm" href="" onclick="ajaxRemove('+index+')">Delete</button>'
+        ].join('');
+    }
+
+    function ajaxRemove(index) {
+        id = {{ list.id }};
+        url = id +'/remove/ingredients/' + index;
+        $.get(url).then(function (res) {
+            if (res == true) {
+                $('#ingredientTable').bootstrapTable('refresh')
+            }
+        })
+    }
+
+    function antispam() {
+        $('button').addClass('disabled');
+    }
+</script>
 {% endblock %}

@@ -107,7 +107,7 @@
 
 {# Status and visibility control panel #}
 {% if owner %}
-<div class="text-center text-light p-3 mb-4 owner-control">Control recipe status and visibility
+<div class="text-center text-light p-3 mb-4 owner-control">Control Recipe Status and Visibility
   <div class="text-center">
     <div class="mb-4">
       {% if recipe.status == 'published' %}
@@ -133,7 +133,7 @@
 {% endif %}
 
 {# Recipe Steps Table #}
-<table class="table table-hover" id="steps-table">
+<table class="table table-hover text-light" id="steps-table">
   <tbody>
     
     {% for step in steps %}
@@ -151,8 +151,8 @@
             {% endfor %}
           {% endif %}
         >
-      <th colspan="1">Step {{ step.step + 1 }}</th>
-      <td colspan="6">
+      <th style="min-width:100px;">Step {{ step.step + 1 }}</th>
+      <td>
         {{ step.text }}
         {% if step.recommendations is defined %}
           {% for rec in step.recommendations %}

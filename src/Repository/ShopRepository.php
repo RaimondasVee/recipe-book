@@ -44,7 +44,7 @@ class ShopRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->andWhere('s.user = :val')
             ->setParameter('val', $value)
-            ->orderBy('s.date', 'ASC')
+            ->orderBy('s.date', 'DESC')
             // ->setMaxResults(10)
             ->getQuery()
             ->getResult()

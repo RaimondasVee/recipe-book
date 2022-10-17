@@ -244,7 +244,7 @@ class RecipeController extends AbstractController
         $entityManager = $doctrine->getManager();
         
         $recipe->setStatus('draft');
-        $recipe->setVisibility('visible');
+        $recipe->setVisibility('private');
         $recipe->setAuthor($user->getId());
         $recipe->setCreated(new \DateTime('now'));
         $recipe->setUpdated(new \DateTime('now'));
