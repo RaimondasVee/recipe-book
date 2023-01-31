@@ -172,14 +172,14 @@
 
     function edit(value, row, index) {
         return [
-            '<input type="number" class="test text-center" style="max-width: 50px;" value="'+value+'"></input>'
+            '<input type="number" class="qtyEdit text-center" style="max-width: 50px;" value="'+value+'"></input>'
         ].join('')
     }
 
     window.qtyEdit = {
-        'click .test': function (e, value, row, index) {
+        'click .qtyEdit': function (e, value, row, index) {
             id = {{ list.id }};
-            $(".test").change(function(){
+            $(".qtyEdit").change(function(){
                 url = id +'/update/ingredients/qty/' + index + '/' + $(this).val();
                 $.get(url).then(function (res) {
                     if (res == true) {

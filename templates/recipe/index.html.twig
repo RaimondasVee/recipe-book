@@ -36,7 +36,7 @@
                     </div>
                 {% endif %}
                 <div class="col-lg-3">
-                    {{ recipe.name }}
+                    {{ recipe.name|u.truncate(25, '...') }}
                 </div>
                 {% if not personal %}
                     <div class="col-lg-3">
@@ -47,7 +47,7 @@
                     </div>
                 {% else %}
                     <div class="col-lg-5">
-                        {{ recipe.description }}
+                        {{ recipe.description|u.truncate(45, '...') }}
                     </div>
                 {% endif %}
                 <div class="col-lg-1">

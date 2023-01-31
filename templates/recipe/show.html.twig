@@ -10,16 +10,16 @@
   {# Info block #}
   <div class="recipe-row col-lg-8">
     <div class="d-flex mb-3 ui-hover-child" data-bs-toggle="modal" data-bs-target="#recipeManagerModal" info-type="name" info-text="{{ recipe.name }}" info-id={{ recipe.id }}>
-      <div class="text-end me-4" style="min-width: 120px">Recipe Name:</div>{{ recipe.name }}
+      <div class="text-end me-4" style="min-width: 120px">Recipe Name:</div><span class="bi-pencil-square"></span>&ensp;{{ recipe.name }}
     </div>
     <div class="d-flex mb-3 ui-hover-child">
       <div class="text-end me-4" style="min-width: 120px">Created By:</div>{{ recipe.author }}
     </div>
     <div class="d-flex mb-3 ui-hover-child" data-bs-toggle="modal" data-bs-target="#recipeManagerModal" info-type="description" info-text="{{ recipe.description }}" info-id={{ recipe.id }}>
-      <div class="text-end me-4" style="min-width: 120px">Description:</div>{{ recipe.description }}
+      <div class="text-end me-4" style="min-width: 120px">Description:</div><span class="bi-pencil-square"></span>&ensp;{{ recipe.description }}
     </div>
     <div class="d-flex mb-3 ui-hover-child" data-bs-toggle="modal" data-bs-target="#recipeManagerModal" info-type="disclaimer" info-text="{{ recipe.disclaimer }}" info-id={{ recipe.id }}>
-      <div class="text-end me-4" style="min-width: 120px">Disclaimer:</div>{{ recipe.disclaimer }}
+      <div class="text-end me-4" style="min-width: 120px">Disclaimer:</div><span class="bi-pencil-square"></span>&ensp;{{ recipe.disclaimer }}
     </div>
     <div class="d-flex mb-3 ui-hover-child">
       <div class="text-end me-4" style="min-width: 120px">Created:</div>{{ recipe.created }}
@@ -28,7 +28,7 @@
       <div class="text-end me-4" style="min-width: 120px">Last Updated:</div>{{ recipe.updated }}
     </div>
     {% if recommendations is defined %}
-      <div class="text-center m-2">Recommendations before you begin:</div>
+      <div class="text-center m-2">Recommendations before you begin: <span class="bi-pencil-square"></span></div>
       <div>
         <table class="table table-hover">
           {% for rec in recommendations %}
@@ -153,11 +153,11 @@
         >
       <th style="min-width:100px;">Step {{ step.step + 1 }}</th>
       <td>
-        {{ step.text }}
+        {{ step.text|nl2br }}
         {% if step.recommendations is defined %}
           {% for rec in step.recommendations %}
           <div class="p-2 mt-1 recipe-step-recommendation">
-          {{ rec.text }}
+          {{ rec.text|nl2br }}
           </div>
           {% endfor %}
         {% endif %}

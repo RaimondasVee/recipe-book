@@ -76,7 +76,7 @@
                         </li> #}
                     </ul>
                     <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2" type="search" id="mainSearch" placeholder="Search" aria-label="Search">
                         <button class="btn btn-warning" type="submit">Search</button>
                     </form>
                     </div>
@@ -98,3 +98,18 @@
         </div>
     </body>
 </html>
+
+<script>
+    // Insta Search
+    $("#mainSearch").change(function(){
+        term = $('#mainSearch').val();
+        url = window.location.origin + '/search/' + $(this).val();
+        console.log(url);
+        $.get(url).then(function (res) {
+                console.log(res);
+            if (res) {
+            }
+        })
+    });
+
+</script>
